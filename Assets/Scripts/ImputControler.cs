@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ImputControler : MonoBehaviour
 {
-    [SerializeField] Playercontroler playercontroler;
+    [SerializeField] Playercontroler playerControler;
 
     void Start()
     {
@@ -44,7 +44,7 @@ public class ImputControler : MonoBehaviour
 
         output  = new Vector2(Mathf.Clamp(leftHorizontal + padHorizontal, -1, 1) , Mathf.Clamp(leftVertical + padVertical, -1, 1) );
         
-        playercontroler.Move(output);
+        playerControler.Move(output);
     }
 
 }

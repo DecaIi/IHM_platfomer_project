@@ -108,7 +108,7 @@ public class Playercontroler : MonoBehaviour
             jumpTimeCounter += Time.deltaTime;
 
             //check if the player still wants to jump
-            wantsToJump = Input.GetButton("Jump");
+            wantsToJump = Input.GetButton("A");
 
             rigidbody.AddForce(Vector3.up * holdJumpForce * rigidbody.mass * maxJumpTime / jumpTimeCounter);
 
