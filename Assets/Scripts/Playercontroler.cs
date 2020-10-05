@@ -38,7 +38,7 @@ public class Playercontroler : MonoBehaviour
 
         isGrounded = DoGroundCheck();
 
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetButtonDown("A"))
         {
             Jump();
         }
