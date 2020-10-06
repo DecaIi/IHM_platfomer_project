@@ -63,11 +63,14 @@ public class Playercontroler : MonoBehaviour
     {
         if (isGrounded) 
         {
-            this.curentVelocity.y = 0;
+            if ( curentVelocity.y < 0)
+                this.curentVelocity.y = 0;
+            if (curentVelocity.y > 0)
+                Debug.Log(curentVelocity);
             return;
         }
         this.curentVelocity.y += gravityAccel;
-        this.curentVelocity.y = Mathf.Clamp(curentVelocity.y, -maxFallingSpeed, 0);
+        //this.curentVelocity.y = Mathf.Clamp(curentVelocity.y, -maxFallingSpeed, 0);
     }
     void ApplyVelocity()
     {
@@ -127,7 +130,7 @@ public class Playercontroler : MonoBehaviour
         Debug.Log("canjum: " + canJump);
         Debug.Log("grounded:" + isGrounded);
 
-        if (!isGrounded && canJump)
+        if (!isGrounded || !canJump)
         {
             return;
         }
