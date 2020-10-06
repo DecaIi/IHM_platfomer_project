@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using TMPro;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Timeline;
 
@@ -96,34 +97,32 @@ public class Playercontroler : MonoBehaviour
 
         if (_dir.x == 0 && _dir.y == 0) //no movment imput 
         {
-            if (isGrounded)
+            float deceleration = isGrounded ? movDeccelMax : airMovDeccelMax;
+            float nexVelocity = curentVelocity.x - signe(curentVelocity.x) * deceleration * Time.deltaTime;
+            if (nexVelocity > 0)
             {
-                
+                curentVelocity.x = nexVelocity;
             }
             else
             {
-                
+                curentVelocity.x = 0;
             }
         }
         else 
         {
-           Vector2 targetVelocity = _dir * (isGrounded ? movSpeedMax : airMovSpeedMax);
-           //The change in velocity we need to perform to achieve our target velocity
-           Vector2 targettAccel = targetVelocity - curentVelocity;
-            //the maximum change in velocity we can do 
-
-           float maxAccel = isGrounded ? movAccelMax : airMovAccelMax;
-           //Clamp the velocity to our maximum velocity change
-           targettAccel.x = Mathf.Clamp(targettAccel.x, -maxAccel, maxAccel);
-           targettAccel.y = Mathf.Clamp(targettAccel.y, -fallingAccel, 0); //allow to fall fast but not to jump higer 
-
-           if (signe(curentVelocity.x) != signe(_dir.x)) // if the player Utrun
-            { 
-                targettAccel.x += uTurnAccel * _dir.x;
-           }
-
-           curentVelocity += targettAccel *Time.deltaTime;
-           //Debug.Log(targettAccel);
+            float maxAccel = (isGrounded ? movAccelMax : airMovAccelMax);
+            float maxSpeed = (isGrounded ? movSpeedMax : airMovSpeedMax);
+            float nexVelocity = curentVelocity.x + _dir.x * maxAccel * Time.deltaTime;
+            if (nexVelocity < _dir.x*maxSpeed)
+            {
+                curentVelocity.x = nexVelocity;
+            }
+            else
+            {
+                curentVelocity.x = _dir.x*maxSpeed;
+            }
+            //TODO : faire que ça desende plus vite quand on apuis vers le bas
+            //TODO : faire un acceleration suplementaire pour les demis tours 
         }
     }
 
