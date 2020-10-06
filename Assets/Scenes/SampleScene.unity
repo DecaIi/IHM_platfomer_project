@@ -215,7 +215,7 @@ GameObject:
   - component: {fileID: 701436250}
   - component: {fileID: 701436249}
   - component: {fileID: 701436248}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -326,6 +326,7 @@ GameObject:
   - component: {fileID: 1086881427}
   - component: {fileID: 1086881428}
   - component: {fileID: 1086881429}
+  - component: {fileID: 1086881430}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -479,3 +480,19 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.16, y: 0.16}
   m_EdgeRadius: 0
+--- !u!114 &1086881430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1086881423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e075ee10c492a44cb675d97f13177cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 256
+  sideRaycastCount: 3
