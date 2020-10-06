@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Timeline;
+
 public class Playercontroler : MonoBehaviour
 {
     [Header("Movement")]
@@ -12,6 +15,7 @@ public class Playercontroler : MonoBehaviour
     [SerializeField] float movSpeedMax;                //The max movement speed when grounded
     [SerializeField] float movAccelMax;                //The maximum change in velocity the player can do on the ground. This determines how responsive the character will be when on the ground.
     [SerializeField] float movDeccelMax;               //the maximum change in velocity grounded when the player is free ( no imput comand ) 
+    [SerializeField] float uTurnAccel;                  // accel to add when the player uturning
     [Header("airParameter")]
     [SerializeField] float airMovSpeedMax;             //The max movement speed when in the air
     [SerializeField] float airMovAccelMax;             //The maximum change in velocity the player can do in the air. This determines how responsive the character will be in the air.
@@ -78,7 +82,14 @@ public class Playercontroler : MonoBehaviour
         transform.position += new Vector3(curentVelocity.x, curentVelocity.y, 0) * Time.deltaTime;
     }
 
-
+    private int signe(float x) // return the signe of x
+    {
+        if( x >0) 
+            return 1;
+        if (x < 0)
+            return -1;
+        return 0;
+    }
     public void Move(Vector2 _dir)
     {
         //Debug.Log(_dir);
@@ -105,6 +116,12 @@ public class Playercontroler : MonoBehaviour
            //Clamp the velocity to our maximum velocity change
            targettAccel.x = Mathf.Clamp(targettAccel.x, -maxAccel, maxAccel);
            targettAccel.y = Mathf.Clamp(targettAccel.y, -fallingAccel, 0); //allow to fall fast but not to jump higer 
+
+           if (signe(curentVelocity.x) != signe(_dir.x)) // if the player Utrun
+            { 
+                targettAccel.x += uTurnAccel * _dir.x;
+           }
+
            curentVelocity += targettAccel *Time.deltaTime;
            //Debug.Log(targettAccel);
         }
@@ -135,7 +152,7 @@ public class Playercontroler : MonoBehaviour
             return;
         }
 
-        this.curentVelocity.y += initialJumpAccel ;
+        this.curentVelocity.y += initialJumpAccel * Time.deltaTime ;
 
         StartCoroutine(JumpCoroutine());
     }
