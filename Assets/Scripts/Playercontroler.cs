@@ -1,35 +1,53 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
+using TMPro;
+using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Timeline;
+
 public class Playercontroler : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] float movSpeed;                //The movement speed when grounded
-    [SerializeField] float airMovSpeed;             //The movement speed when in the air
-    [SerializeField] float movAccel;                //The maximum change in velocity the player can do on the ground. This determines how responsive the character will be when on the ground.
-    [SerializeField] float airMovAccel;             //The maximum change in velocity the player can do in the air. This determines how responsive the character will be in the air.
-
+    
+    [Header("GroundParameter")]
+    [SerializeField] float movSpeedMax;                //The max movement speed when grounded
+    [SerializeField] float movAccelMax;                //The maximum change in velocity the player can do on the ground. This determines how responsive the character will be when on the ground.
+    [SerializeField] float movDeccelMax;               //the maximum change in velocity grounded when the player is free ( no imput comand ) 
+    [SerializeField] float uTurnAccel;                  // accel to add when the player uturning
+    [Header("airParameter")]
+    [SerializeField] float airMovSpeedMax;             //The max movement speed when in the air
+    [SerializeField] float airMovAccelMax;             //The maximum change in velocity the player can do in the air. This determines how responsive the character will be in the air.
+    [SerializeField] float airMovDeccelMax;            //the maximum change in velocity grounded when player is "free" ( no imput command)
+    [SerializeField] float fallingAccel;               //the acceleration when push down 
     [Header("Jump")]
-    [SerializeField] float initialJumpForce;        //The force applied to the player when starting to jump
-    [SerializeField] float holdJumpForce;           //The force applied to the character when holding the jump button
-    [SerializeField] float maxJumpTime;             //The maximum amount of time the player can hold the jump button
-
+    [SerializeField] float initialJumpAccel;        //The force applied to the player when starting to jump
+    [SerializeField] float jumpDelay;
     [Header("Ground detection")]
     [SerializeField] float groundCastRadius;        //Radius of the circle when doing the circle cast to check for the ground
-    [SerializeField] float groundCastDist;          //Distance of the circle cast
+    [SerializeField] float groundCastDist;//Distance of the circle cast
+    
+    [Header("Faling parameter")]    
+    [SerializeField] float gravityAccel;            //change in velovity (y) due to gravity 
+    [SerializeField] float maxFallingSpeed;         // maximum speed the object can acces in y 
 
-    [Header("Misc")]
-    [SerializeField] float gravityMultiplier = 2.7f;
+    
+    Vector2 curentVelocity;
 
     //Rigidbody cache
     new Rigidbody2D rigidbody;
 
+
     bool isGrounded;
+    bool canJump = true;
 
     void Start()
     {
+        isGrounded = false;
+        curentVelocity = new Vector2(0,0);
         //Setup our rigidbody 
-        rigidbody = GetComponent<Rigidbody2D>();
     }
 
     void Update()
@@ -42,30 +60,70 @@ public class Playercontroler : MonoBehaviour
         {
             Jump();
         }
+        ApplyGravity();
+        ApplyVelocity();
     }
 
+    void ApplyGravity()
+    {
+        if (isGrounded) 
+        {
+            if ( curentVelocity.y < 0)
+                this.curentVelocity.y = 0;
+            if (curentVelocity.y > 0)
+                Debug.Log(curentVelocity);
+            return;
+        }
+        this.curentVelocity.y += gravityAccel;
+        //this.curentVelocity.y = Mathf.Clamp(curentVelocity.y, -maxFallingSpeed, 0);
+    }
+    void ApplyVelocity()
+    {
+        //Debug.Log(curentVelocity);
+        transform.position += new Vector3(curentVelocity.x, curentVelocity.y, 0) * Time.deltaTime;
+    }
+
+    private int signe(float x) // return the signe of x
+    {
+        if( x >0) 
+            return 1;
+        if (x < 0)
+            return -1;
+        return 0;
+    }
     public void Move(Vector2 _dir)
     {
-        Debug.Log(_dir);
-        Vector2 velocity = rigidbody.velocity;
-      
+        //Debug.Log(_dir);
 
-        Vector2 targetVelocity = _dir * (isGrounded ? movSpeed : airMovSpeed);
-        
-        //The change in velocity we need to perform to achieve our target velocity
-        Vector2 velocityDelta = targetVelocity - velocity;
-
-        //The maximum change in velocity we can do
-        float maxDelta = isGrounded ? movAccel : airMovAccel;
-
-        //Clamp the velocity delta to our maximum velocity change
-        velocityDelta.x = Mathf.Clamp(velocityDelta.x, -maxDelta, maxDelta);
-
-        //We don't want to move the character vertically
-        velocityDelta.y = 0;
-        Debug.Log(velocityDelta * rigidbody.mass);
-        //Apply the velocity change to the character
-        rigidbody.AddForce(velocityDelta * rigidbody.mass, ForceMode2D.Impulse);
+        if (_dir.x == 0 && _dir.y == 0) //no movment imput 
+        {
+            float deceleration = isGrounded ? movDeccelMax : airMovDeccelMax;
+            float nexVelocity = curentVelocity.x - signe(curentVelocity.x) * deceleration * Time.deltaTime;
+            if (nexVelocity > 0)
+            {
+                curentVelocity.x = nexVelocity;
+            }
+            else
+            {
+                curentVelocity.x = 0;
+            }
+        }
+        else 
+        {
+            float maxAccel = (isGrounded ? movAccelMax : airMovAccelMax);
+            float maxSpeed = (isGrounded ? movSpeedMax : airMovSpeedMax);
+            float nexVelocity = curentVelocity.x + _dir.x * maxAccel * Time.deltaTime;
+            if (nexVelocity < _dir.x*maxSpeed)
+            {
+                curentVelocity.x = nexVelocity;
+            }
+            else
+            {
+                curentVelocity.x = _dir.x*maxSpeed;
+            }
+            //TODO : faire que ça desende plus vite quand on apuis vers le bas
+            //TODO : faire un acceleration suplementaire pour les demis tours 
+        }
     }
 
     bool DoGroundCheck()
@@ -85,12 +143,15 @@ public class Playercontroler : MonoBehaviour
 
     void Jump() // jump if the player is grounder and start a timer for the jump
     {
-        if (!isGrounded)
+        Debug.Log("canjum: " + canJump);
+        Debug.Log("grounded:" + isGrounded);
+
+        if (!isGrounded || !canJump)
         {
             return;
         }
 
-        rigidbody.AddForce(Vector3.up * initialJumpForce * rigidbody.mass, ForceMode2D.Impulse);
+        this.curentVelocity.y += initialJumpAccel * Time.deltaTime ;
 
         StartCoroutine(JumpCoroutine());
     }
@@ -98,21 +159,18 @@ public class Playercontroler : MonoBehaviour
     IEnumerator JumpCoroutine() //Jump timer 
     {
         //true if the player is holding the Jump button down
-        bool wantsToJump = true;
+        canJump = false;
 
         //Counts for how long we've been jumping
         float jumpTimeCounter = 0;
 
-        while (wantsToJump && jumpTimeCounter <= maxJumpTime)
+        while (jumpTimeCounter <= jumpDelay)
         {
             jumpTimeCounter += Time.deltaTime;
 
-            //check if the player still wants to jump
-            wantsToJump = Input.GetButton("A");
-
-            rigidbody.AddForce(Vector3.up * holdJumpForce * rigidbody.mass * maxJumpTime / jumpTimeCounter);
-
-            yield return null;
         }
+        canJump = true; 
+        yield return null;
+        
     }
 }
