@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using TMPro;
+using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Timeline;
+
 public class Playercontroler : MonoBehaviour
 {
     [Header("Movement")]
@@ -12,6 +16,7 @@ public class Playercontroler : MonoBehaviour
     [SerializeField] float movSpeedMax;                //The max movement speed when grounded
     [SerializeField] float movAccelMax;                //The maximum change in velocity the player can do on the ground. This determines how responsive the character will be when on the ground.
     [SerializeField] float movDeccelMax;               //the maximum change in velocity grounded when the player is free ( no imput comand ) 
+    [SerializeField] float uTurnAccel;                  // accel to add when the player uturning
     [Header("airParameter")]
     [SerializeField] float airMovSpeedMax;             //The max movement speed when in the air
     [SerializeField] float airMovAccelMax;             //The maximum change in velocity the player can do in the air. This determines how responsive the character will be in the air.
@@ -78,35 +83,46 @@ public class Playercontroler : MonoBehaviour
         transform.position += new Vector3(curentVelocity.x, curentVelocity.y, 0) * Time.deltaTime;
     }
 
-
+    private int signe(float x) // return the signe of x
+    {
+        if( x >0) 
+            return 1;
+        if (x < 0)
+            return -1;
+        return 0;
+    }
     public void Move(Vector2 _dir)
     {
         //Debug.Log(_dir);
 
         if (_dir.x == 0 && _dir.y == 0) //no movment imput 
         {
-            if (isGrounded)
+            float deceleration = isGrounded ? movDeccelMax : airMovDeccelMax;
+            float nexVelocity = curentVelocity.x - signe(curentVelocity.x) * deceleration * Time.deltaTime;
+            if (nexVelocity > 0)
             {
-                
+                curentVelocity.x = nexVelocity;
             }
             else
             {
-                
+                curentVelocity.x = 0;
             }
         }
         else 
         {
-           Vector2 targetVelocity = _dir * (isGrounded ? movSpeedMax : airMovSpeedMax);
-           //The change in velocity we need to perform to achieve our target velocity
-           Vector2 targettAccel = targetVelocity - curentVelocity;
-            //the maximum change in velocity we can do 
-
-           float maxAccel = isGrounded ? movAccelMax : airMovAccelMax;
-           //Clamp the velocity to our maximum velocity change
-           targettAccel.x = Mathf.Clamp(targettAccel.x, -maxAccel, maxAccel);
-           targettAccel.y = Mathf.Clamp(targettAccel.y, -fallingAccel, 0); //allow to fall fast but not to jump higer 
-           curentVelocity += targettAccel *Time.deltaTime;
-           //Debug.Log(targettAccel);
+            float maxAccel = (isGrounded ? movAccelMax : airMovAccelMax);
+            float maxSpeed = (isGrounded ? movSpeedMax : airMovSpeedMax);
+            float nexVelocity = curentVelocity.x + _dir.x * maxAccel * Time.deltaTime;
+            if (nexVelocity < _dir.x*maxSpeed)
+            {
+                curentVelocity.x = nexVelocity;
+            }
+            else
+            {
+                curentVelocity.x = _dir.x*maxSpeed;
+            }
+            //TODO : faire que ça desende plus vite quand on apuis vers le bas
+            //TODO : faire un acceleration suplementaire pour les demis tours 
         }
     }
 
@@ -135,7 +151,7 @@ public class Playercontroler : MonoBehaviour
             return;
         }
 
-        this.curentVelocity.y += initialJumpAccel ;
+        this.curentVelocity.y += initialJumpAccel * Time.deltaTime ;
 
         StartCoroutine(JumpCoroutine());
     }
