@@ -25,89 +25,69 @@ public class Playercontroler : MonoBehaviour
     [Header("Jump")]
     [SerializeField] float initialJumpAccel;        //The force applied to the player when starting to jump
     [SerializeField] float jumpDelay;
+    [SerializeField] float jumpHeight;
     [Header("Ground detection")]
-    [SerializeField] float groundCastRadius;        //Radius of the circle when doing the circle cast to check for the ground
-    [SerializeField] float groundCastDist;//Distance of the circle cast
+    [SerializeField] float groundCastRadius;                //Radius of the circle when doing the circle cast to check for the ground
+    [SerializeField] float groundDistanceDetection;          //Distance of the circle cast
     
     [Header("Faling parameter")]    
     [SerializeField] float gravityAccel;            //change in velovity (y) due to gravity 
     [SerializeField] float maxFallingSpeed;         // maximum speed the object can acces in y 
 
+    [SerializeField] LayerMask platformLayer;
+
+    Collider2D playerCollider;
     
     Vector2 currentVelocity;
 
-    //Rigidbody cache
-    new Rigidbody2D rigidbody;
+    public Vector2 Velocity
+    {
+        get { return currentVelocity; }
+    }
 
-
-    bool isGrounded;
     bool canJump = true;
+
+    void Awake()
+    {
+        playerCollider = GetComponent<Collider2D>();
+    }
 
     void Start()
     {
-        isGrounded = false;
         currentVelocity = new Vector2(0,0);
-        //Setup our rigidbody 
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        // rigidbody.AddForce(gravityMultiplier * Physics2D.gravity * rigidbody.mass, ForceMode2D.Force); //Handel the gravity force 
-
-        isGrounded = DoGroundCheck();
-
-        if (Input.GetButtonDown("A"))
-        {
-            Jump();
-        }
         ApplyGravity();
         ApplyVelocity();
     }
 
     void ApplyGravity()
     {
-        if (isGrounded) 
-        {
-            if ( currentVelocity.y < 0)
-                this.currentVelocity.y = 0;
-            if (currentVelocity.y > 0)
-                Debug.Log(currentVelocity);
-            return;
-        }
-        this.currentVelocity.y += gravityAccel;
-        //this.curentVelocity.y = Mathf.Clamp(curentVelocity.y, -maxFallingSpeed, 0);
-    }
-    void ApplyVelocity()
-    {
-        //Debug.Log(curentVelocity);
-        transform.position += new Vector3(currentVelocity.x, currentVelocity.y, 0) * Time.deltaTime;
+        ComputeGravity();
     }
 
-    private int signe(float x) // return the signe of x
+    void ApplyVelocity()
     {
-        if( x >0) 
-            return 1;
-        if (x < 0)
-            return -1;
-        return 0;
+        transform.position += new Vector3(currentVelocity.x, currentVelocity.y, 0) * Time.deltaTime;
     }
 
     public void Move(Vector2 _dir)
     {
         if (_dir.x == 0 && _dir.y == 0) //no movment imput 
         {
-            float deceleration = isGrounded ? movDeccelMax : airMovDeccelMax;
+            float deceleration = IsGrounded() ? movDeccelMax : airMovDeccelMax;
             ComputeVelocity(0f, -deceleration, currentVelocity.x);
         }
         else
         {
-            float maxAccel = (isGrounded ? movAccelMax : airMovAccelMax);
-            float maxSpeed = (isGrounded ? movSpeedMax : airMovSpeedMax);
+            float maxAccel = (IsGrounded() ? movAccelMax : airMovAccelMax);
+            float maxSpeed = (IsGrounded() ? movSpeedMax : airMovSpeedMax);
             ComputeVelocity(maxSpeed, maxAccel, _dir.x);
             //TODO : faire que ça desende plus vite quand on apuis vers le bas
             //TODO : faire un acceleration suplementaire pour les demis tours 
         }
-        Debug.Log(currentVelocity.x);
     }
 
     /**
@@ -126,7 +106,6 @@ public class Playercontroler : MonoBehaviour
         float signedTargetVelocity = direction * targetVelocity;
 
         float computedVelocity = currentVelocity.x + signedAcceleration * Time.deltaTime;
-        float absoluteComputedVelocity = Mathf.Abs(computedVelocity);
 
         // If the player accelrates or deceleartes but hasn't reached targetVelocity, we apply computedVelocity
         if ((signedAcceleration > 0 && computedVelocity < signedTargetVelocity) || (signedAcceleration < 0 && computedVelocity > signedTargetVelocity))
@@ -140,37 +119,69 @@ public class Playercontroler : MonoBehaviour
         }
     }
 
-    bool DoGroundCheck()
+    bool ComputeJump(float targetHeight, float acceleration)
     {
-        return DoGroundCast() != Vector2.zero;
-    }
+        float computedVelocity = currentVelocity.y + acceleration * Time.deltaTime;
 
-    Vector2 DoGroundCast() //cast a ray in the botom way ad return the noral vector betwin what is hit and the player
-    {
-        RaycastHit2D[] hits = new RaycastHit2D[2];
-        if (Physics2D.CircleCast(transform.position, groundCastRadius, Vector3.down, new ContactFilter2D(), hits, groundCastDist) > 1)
+        Debug.Log(computedVelocity * Time.deltaTime);
+
+        if (computedVelocity * Time.deltaTime < targetHeight)
         {
-            return hits[1].normal;
+            currentVelocity.y = computedVelocity;
+            return true;
         }
-        return Vector2.zero;
+
+        return false;
     }
 
-    void Jump() // jump if the player is grounder and start a timer for the jump
+    void ComputeGravity()
     {
-        Debug.Log("canjum: " + canJump);
-        Debug.Log("grounded:" + isGrounded);
+        float resultingVerticalVelocity = currentVelocity.y + gravityAccel * Time.deltaTime;
 
-        if (!isGrounded || !canJump)
+        RaycastHit2D bottomHit = BottomCollision(resultingVerticalVelocity);
+        if (bottomHit.collider != null)
+        {
+            if (currentVelocity.y < 0)
+            {
+                currentVelocity.y = 0f;
+            }
+            transform.position += Vector3.down * (bottomHit.distance);
+        }
+        else
+        {
+            currentVelocity.y = resultingVerticalVelocity;
+        }
+    }
+
+    bool IsGrounded()
+    {
+        RaycastHit2D raycastHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.down, groundDistanceDetection, platformLayer);
+        return raycastHit.collider != null;
+    }
+
+    RaycastHit2D BottomCollision(float verticalVelocity)
+    {
+        RaycastHit2D raycastHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.down, verticalVelocity, platformLayer);
+        return raycastHit;
+    }
+
+    public void Jump() // jump if the player is grounder and start a timer for the jump
+    {
+        if (!IsGrounded() || !canJump)
         {
             return;
         }
 
-        this.currentVelocity.y += initialJumpAccel * Time.deltaTime ;
-
         StartCoroutine(JumpCoroutine());
     }
 
-    IEnumerator JumpCoroutine() //Jump timer 
+    IEnumerator JumpCoroutine()
+    {
+        while (ComputeJump(jumpHeight, initialJumpAccel)) {}
+        yield return null;
+    }
+
+    IEnumerator JumpCoroutine2() //Jump timer 
     {
         //true if the player is holding the Jump button down
         canJump = false;
@@ -180,6 +191,7 @@ public class Playercontroler : MonoBehaviour
 
         while (jumpTimeCounter <= jumpDelay)
         {
+            ComputeJump(jumpHeight, initialJumpAccel);
             jumpTimeCounter += Time.deltaTime;
 
         }

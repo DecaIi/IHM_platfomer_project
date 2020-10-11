@@ -21,8 +21,8 @@ public class ImputControler : MonoBehaviour
     void Update()
     {
         if (Input.GetButton("A"))
-        {                
-                //nothing yet 
+        {
+            playerControler.Jump(); 
         }
         if (Input.GetButton("B"))
         {                
