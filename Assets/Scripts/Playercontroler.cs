@@ -172,11 +172,13 @@ public class Playercontroler : MonoBehaviour
             return;
         }
 
-        StartCoroutine(JumpCoroutine());
+        //StartCoroutine(JumpCoroutine());
     }
 
     IEnumerator JumpCoroutine()
     {
+        canJump = false;
+
         while (ComputeJump(jumpHeight, initialJumpAccel)) {}
         yield return null;
     }
