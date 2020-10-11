@@ -34,7 +34,7 @@ public class Playercontroler : MonoBehaviour
     [SerializeField] float maxFallingSpeed;         // maximum speed the object can acces in y 
 
     
-    Vector2 curentVelocity;
+    Vector2 currentVelocity;
 
     //Rigidbody cache
     new Rigidbody2D rigidbody;
@@ -46,7 +46,7 @@ public class Playercontroler : MonoBehaviour
     void Start()
     {
         isGrounded = false;
-        curentVelocity = new Vector2(0,0);
+        currentVelocity = new Vector2(0,0);
         //Setup our rigidbody 
     }
 
@@ -68,19 +68,19 @@ public class Playercontroler : MonoBehaviour
     {
         if (isGrounded) 
         {
-            if ( curentVelocity.y < 0)
-                this.curentVelocity.y = 0;
-            if (curentVelocity.y > 0)
-                Debug.Log(curentVelocity);
+            if ( currentVelocity.y < 0)
+                this.currentVelocity.y = 0;
+            if (currentVelocity.y > 0)
+                Debug.Log(currentVelocity);
             return;
         }
-        this.curentVelocity.y += gravityAccel;
+        this.currentVelocity.y += gravityAccel;
         //this.curentVelocity.y = Mathf.Clamp(curentVelocity.y, -maxFallingSpeed, 0);
     }
     void ApplyVelocity()
     {
         //Debug.Log(curentVelocity);
-        transform.position += new Vector3(curentVelocity.x, curentVelocity.y, 0) * Time.deltaTime;
+        transform.position += new Vector3(currentVelocity.x, currentVelocity.y, 0) * Time.deltaTime;
     }
 
     private int signe(float x) // return the signe of x
@@ -91,38 +91,52 @@ public class Playercontroler : MonoBehaviour
             return -1;
         return 0;
     }
+
     public void Move(Vector2 _dir)
     {
-        //Debug.Log(_dir);
-
         if (_dir.x == 0 && _dir.y == 0) //no movment imput 
         {
             float deceleration = isGrounded ? movDeccelMax : airMovDeccelMax;
-            float nexVelocity = curentVelocity.x - signe(curentVelocity.x) * deceleration * Time.deltaTime;
-            if (nexVelocity > 0)
-            {
-                curentVelocity.x = nexVelocity;
-            }
-            else
-            {
-                curentVelocity.x = 0;
-            }
+            ComputeVelocity(0f, -deceleration, currentVelocity.x);
         }
-        else 
+        else
         {
             float maxAccel = (isGrounded ? movAccelMax : airMovAccelMax);
             float maxSpeed = (isGrounded ? movSpeedMax : airMovSpeedMax);
-            float nexVelocity = curentVelocity.x + _dir.x * maxAccel * Time.deltaTime;
-            if (nexVelocity < _dir.x*maxSpeed)
-            {
-                curentVelocity.x = nexVelocity;
-            }
-            else
-            {
-                curentVelocity.x = _dir.x*maxSpeed;
-            }
+            ComputeVelocity(maxSpeed, maxAccel, _dir.x);
             //TODO : faire que ça desende plus vite quand on apuis vers le bas
             //TODO : faire un acceleration suplementaire pour les demis tours 
+        }
+        Debug.Log(currentVelocity.x);
+    }
+
+    /**
+     * Computes velocity of the character.
+     * \param targetVelocity    The absolute velocity the character has to reach.
+     * \param acceleration      The maximum accelration of the character to reach the target velocity. If negative, the player will decelerate.
+     * \param direction         The direction the character is moving, towards positive x if positive, towards negative x otherwise. 
+     *                          Value has no effect.
+     */
+    void ComputeVelocity(float targetVelocity, float acceleration, float direction)
+    {
+        // Making sure the value of direction doesn't affect our calculations
+        direction = Mathf.Sign(direction);
+
+        float signedAcceleration = direction * acceleration;
+        float signedTargetVelocity = direction * targetVelocity;
+
+        float computedVelocity = currentVelocity.x + signedAcceleration * Time.deltaTime;
+        float absoluteComputedVelocity = Mathf.Abs(computedVelocity);
+
+        // If the player accelrates or deceleartes but hasn't reached targetVelocity, we apply computedVelocity
+        if ((signedAcceleration > 0 && computedVelocity < signedTargetVelocity) || (signedAcceleration < 0 && computedVelocity > signedTargetVelocity))
+        {
+            currentVelocity.x = computedVelocity;
+        }
+        // Else the player has already reached targetVelocity and we make sure it stays at that targetVelocity
+        else
+        {
+            currentVelocity.x = signedTargetVelocity;
         }
     }
 
@@ -151,7 +165,7 @@ public class Playercontroler : MonoBehaviour
             return;
         }
 
-        this.curentVelocity.y += initialJumpAccel * Time.deltaTime ;
+        this.currentVelocity.y += initialJumpAccel * Time.deltaTime ;
 
         StartCoroutine(JumpCoroutine());
     }

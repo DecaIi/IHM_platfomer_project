@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿/*using System.Collections;
 using System.Collections.Generic;
 using System.IO.MemoryMappedFiles;
 using UnityEngine;
@@ -77,4 +77,4 @@ public class CollisionHandler : MonoBehaviour
         RaycastHit2D hit = Physics2D.BoxCast(BoxColliderCenter, BoxColliderSize, 0f, Vector2.up, distance, layerMask);
         return hit.collider;
     }
-}
+}*/
