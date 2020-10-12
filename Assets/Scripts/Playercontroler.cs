@@ -70,7 +70,10 @@ public class Playercontroler : MonoBehaviour
 
     void ApplyVelocity()
     {
+        Vector3 pos = new Vector2(transform.position.x, transform.position.y);
         transform.position += new Vector3(currentVelocity.x, currentVelocity.y, 0) * Time.deltaTime;
+        Debug.Log("Velocity " + currentVelocity + " applied; new pos = " + transform.position);
+        Debug.Log("Former pos = " + pos + "; Delta pos = " + (transform.position - pos));
     }
 
     public void Move(Vector2 _dir)
@@ -119,19 +122,26 @@ public class Playercontroler : MonoBehaviour
         }
     }
 
-    bool ComputeJump(float targetHeight, float acceleration)
+    IEnumerator ComputeJump(float targetHeight, float acceleration)
     {
-        float computedVelocity = currentVelocity.y + acceleration * Time.deltaTime;
+        canJump = false;
+        float debugInitPos = transform.position.y;
+        float cummulatedHeight = 0f;
 
-        Debug.Log(computedVelocity * Time.deltaTime);
-
-        if (computedVelocity * Time.deltaTime < targetHeight)
+        while (cummulatedHeight < targetHeight)
         {
-            currentVelocity.y = computedVelocity;
-            return true;
+            float computedVelocity = currentVelocity.y + acceleration * Time.deltaTime;
+            cummulatedHeight += computedVelocity * Time.deltaTime;
+
+            if (cummulatedHeight < targetHeight)
+            {
+                currentVelocity.y = computedVelocity;
+                //yield return null;
+            }
         }
 
-        return false;
+        canJump = true;
+        yield return null;
     }
 
     void ComputeGravity()
@@ -149,6 +159,7 @@ public class Playercontroler : MonoBehaviour
         }
         else
         {
+            //Debug.Log("Gravity Applied");
             currentVelocity.y = resultingVerticalVelocity;
         }
     }
@@ -172,14 +183,20 @@ public class Playercontroler : MonoBehaviour
             return;
         }
 
-        //StartCoroutine(JumpCoroutine());
+        StartCoroutine(ComputeJump(jumpHeight, initialJumpAccel));
     }
 
     IEnumerator JumpCoroutine()
     {
         canJump = false;
+        float initialHeight = transform.position.y;
 
-        while (ComputeJump(jumpHeight, initialJumpAccel)) {}
+        while (false) 
+        {
+            Debug.Log("Inner");
+            yield return null;
+        }
+        Debug.Log("Outer");
         yield return null;
     }
 

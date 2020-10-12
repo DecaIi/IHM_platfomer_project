@@ -322,7 +322,7 @@ MonoBehaviour:
   airMovAccelMax: 1
   airMovDeccelMax: 0
   fallingAccel: 0
-  initialJumpAccel: 0.01
+  initialJumpAccel: 10
   jumpDelay: 0.5
   jumpHeight: 3
   groundCastRadius: 0.33
