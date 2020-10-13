@@ -78,13 +78,17 @@ public class Playercontroler : MonoBehaviour
         if (_dir.x == 0 && _dir.y == 0) //no movment imput 
         {
             float deceleration = IsGrounded() ? movDeccelMax : airMovDeccelMax;
-            ComputeVelocity(0f, -deceleration, currentVelocity.x);
+            ComputeHorizontalVelocity(0f, -deceleration, currentVelocity.x);
         }
         else
         {
             float maxAccel = (IsGrounded() ? movAccelMax : airMovAccelMax);
             float maxSpeed = (IsGrounded() ? movSpeedMax : airMovSpeedMax);
-            ComputeVelocity(maxSpeed, maxAccel, _dir.x);
+            ComputeHorizontalVelocity(maxSpeed, maxAccel, _dir.x);
+            if (!IsGrounded() && _dir.y < 0)
+            {
+
+            }
             //TODO : faire que ça desende plus vite quand on apuis vers le bas
             //TODO : faire un acceleration suplementaire pour les demis tours 
         }
@@ -97,7 +101,7 @@ public class Playercontroler : MonoBehaviour
      * \param direction         The direction the character is moving, towards positive x if positive, towards negative x otherwise. 
      *                          Value has no effect.
      */
-    void ComputeVelocity(float targetVelocity, float acceleration, float direction)
+    void ComputeHorizontalVelocity(float targetVelocity, float acceleration, float direction)
     {
         // Making sure the value of direction doesn't affect our calculations
         direction = Mathf.Sign(direction);
