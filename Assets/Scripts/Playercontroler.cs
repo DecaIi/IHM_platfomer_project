@@ -71,6 +71,7 @@ public class Playercontroler : MonoBehaviour
     void ApplyVelocity()
     {
         transform.position += new Vector3(currentVelocity.x, currentVelocity.y, 0) * Time.deltaTime;
+        Debug.Log("vitess: " + currentVelocity);
     }
 
     public void Move(Vector2 _dir)
@@ -78,51 +79,63 @@ public class Playercontroler : MonoBehaviour
         if (_dir.x == 0 && _dir.y == 0) //no movment imput 
         {
             float deceleration = IsGrounded() ? movDeccelMax : airMovDeccelMax;
-            ComputeHorizontalVelocity(0f, -deceleration, currentVelocity.x);
+            ComputeVelocity(new Vector2(0f,0f), new Vector2(-deceleration,0f), new Vector2(currentVelocity.x,0));
         }
         else
         {
             float maxAccel = (IsGrounded() ? movAccelMax : airMovAccelMax);
             float maxSpeed = (IsGrounded() ? movSpeedMax : airMovSpeedMax);
-            ComputeHorizontalVelocity(maxSpeed, maxAccel, _dir.x);
-            if (!IsGrounded() && _dir.y < 0)
-            {
-
-            }
+            ComputeVelocity(new Vector2(maxSpeed,0f), new Vector2(maxAccel,0f), _dir);
+            
             //TODO : faire que ça desende plus vite quand on apuis vers le bas
             //TODO : faire un acceleration suplementaire pour les demis tours 
         }
     }
 
     /**
-     * Computes velocity of the character.
+     * Computes the horizontal velocity of the character.
      * \param targetVelocity    The absolute velocity the character has to reach.
      * \param acceleration      The maximum accelration of the character to reach the target velocity. If negative, the player will decelerate.
      * \param direction         The direction the character is moving, towards positive x if positive, towards negative x otherwise. 
      *                          Value has no effect.
      */
-    void ComputeHorizontalVelocity(float targetVelocity, float acceleration, float direction)
+    void ComputeVelocity(Vector2 targetVelocity, Vector2 acceleration, Vector2 direction)
     {
         // Making sure the value of direction doesn't affect our calculations
-        direction = Mathf.Sign(direction);
+        Vector2 normedDirection = new Vector2(Math.Sign(direction.x), Math.Sign(direction.y));
+       
+        Vector2 signedAcceleration = normedDirection * acceleration;
+        Vector2 signedTargetVelocity = normedDirection * targetVelocity;
 
-        float signedAcceleration = direction * acceleration;
-        float signedTargetVelocity = direction * targetVelocity;
-
-        float computedVelocity = currentVelocity.x + signedAcceleration * Time.deltaTime;
-
-        // If the player accelrates or deceleartes but hasn't reached targetVelocity, we apply computedVelocity
-        if ((signedAcceleration > 0 && computedVelocity < signedTargetVelocity) || (signedAcceleration < 0 && computedVelocity > signedTargetVelocity))
-        {
-            currentVelocity.x = computedVelocity;
+        Vector2 computedVelocity = currentVelocity + signedAcceleration * Time.deltaTime;
+        //handel X velocity
+      
+        if(normedDirection.x != 0) { //modifie volocity only if we have an order on this direction
+            // If the player accelrates or deceleartes but hasn't reached targetVelocity, we apply computedVelocity
+            if ((signedAcceleration.x > 0 && computedVelocity.x < signedTargetVelocity.x) || (signedAcceleration.x < 0 && computedVelocity.x > signedTargetVelocity.x))
+            {
+                currentVelocity.x = computedVelocity.x;
+            }
+            // Else the player has already reached targetVelocity and we make sure it stays at that targetVelocity
+            else
+            {
+                currentVelocity.x = signedTargetVelocity.x;
+            }
         }
-        // Else the player has already reached targetVelocity and we make sure it stays at that targetVelocity
-        else
-        {
-            currentVelocity.x = signedTargetVelocity;
+        //Handel Y Velocity
+        if(normedDirection.y != 0 ) {  //modifie volocity only if we have an order on this direction
+            if ((signedAcceleration.y > 0 && computedVelocity.y < signedTargetVelocity.y) || (signedAcceleration.y < 0 && computedVelocity.y > signedTargetVelocity.y))
+            {
+                currentVelocity.y = computedVelocity.y;
+            }
+            // Else the player has already reached targetVelocity and we make sure it stays at that targetVelocity
+            else
+            {
+                currentVelocity.y = signedTargetVelocity.y;
+            }
         }
     }
-
+   
     bool ComputeJump(float targetHeight, float acceleration)
     {
         float computedVelocity = currentVelocity.y + acceleration * Time.deltaTime;
@@ -156,13 +169,15 @@ public class Playercontroler : MonoBehaviour
             currentVelocity.y = resultingVerticalVelocity;
         }
     }
-
+    /** return true if the character colide a platform in the botom direction
+     */
     bool IsGrounded()
     {
         RaycastHit2D raycastHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.down, groundDistanceDetection, platformLayer);
         return raycastHit.collider != null;
     }
-
+    /** process to a boxCast in the verticalvelocitydirection
+     */
     RaycastHit2D BottomCollision(float verticalVelocity)
     {
         RaycastHit2D raycastHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.down, verticalVelocity, platformLayer);
