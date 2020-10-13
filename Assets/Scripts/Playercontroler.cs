@@ -95,7 +95,7 @@ public class Playercontroler : MonoBehaviour
             //TODO : faire un acceleration suplementaire pour les demis tours 
         }
     }
-
+    
     /**
      * Computes the horizontal velocity of the character.
      * \param targetVelocity    The absolute velocity the character has to reach.
@@ -140,23 +140,8 @@ public class Playercontroler : MonoBehaviour
             }
         }
     }
-   
-    bool ComputeJump(float targetHeight, float acceleration)
-    {
-        float computedVelocity = currentVelocity.y + acceleration * Time.deltaTime;
 
-        Debug.Log(computedVelocity * Time.deltaTime);
-
-        if (computedVelocity * Time.deltaTime < targetHeight)
-        {
-            currentVelocity.y = computedVelocity;
-            return true;
-        }
-
-        return false;
-    }
-
-    void ComputeGravity()
+    void ComputeGravity() //handel gravity
     {
         float resultingVerticalVelocity = currentVelocity.y + gravityAccel * Time.deltaTime;
 
@@ -174,8 +159,30 @@ public class Playercontroler : MonoBehaviour
             currentVelocity.y = resultingVerticalVelocity;
         }
     }
+
+
+    public void Jump() // jump if the player is grounder and start a timer for the jump
+    {
+        if (!IsGrounded() || !canJump)
+        {
+            return;
+        }
+        currentVelocity.y += initialJumpAccel * Time.deltaTime;
+        StartCoroutine(JumpCoroutine2());
+        //StartCoroutine(JumpCoroutine());
+    }
+
+    IEnumerator JumpCoroutine()
+    {
+        canJump = false;
+
+        while (ComputeJump(jumpHeight, initialJumpAccel)) {}
+        yield return null;
+    }
+
+
     /** return true if the character colide a platform in the botom direction
-     */
+   */
     bool IsGrounded()
     {
         RaycastHit2D raycastHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.down, groundDistanceDetection, platformLayer);
@@ -189,22 +196,23 @@ public class Playercontroler : MonoBehaviour
         return raycastHit;
     }
 
-    public void Jump() // jump if the player is grounder and start a timer for the jump
+
+
+    //******************** unsed ******************************
+
+    bool ComputeJump(float targetHeight, float acceleration)
     {
-        if (!IsGrounded() || !canJump)
+        float computedVelocity = currentVelocity.y + acceleration * Time.deltaTime;
+
+        Debug.Log(computedVelocity * Time.deltaTime);
+
+        if (computedVelocity * Time.deltaTime < targetHeight)
         {
-            return;
+            currentVelocity.y = computedVelocity;
+            return true;
         }
 
-        //StartCoroutine(JumpCoroutine());
-    }
-
-    IEnumerator JumpCoroutine()
-    {
-        canJump = false;
-
-        while (ComputeJump(jumpHeight, initialJumpAccel)) {}
-        yield return null;
+        return false;
     }
 
     IEnumerator JumpCoroutine2() //Jump timer 
