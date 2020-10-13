@@ -16,24 +16,27 @@ public class Playercontroler : MonoBehaviour
     [SerializeField] float movSpeedMax;                //The max movement speed when grounded
     [SerializeField] float movAccelMax;                //The maximum change in velocity the player can do on the ground. This determines how responsive the character will be when on the ground.
     [SerializeField] float movDeccelMax;               //the maximum change in velocity grounded when the player is free ( no imput comand ) 
-    [SerializeField] float uTurnAccel;                  // accel to add when the player uturning
+    [SerializeField] float uTurnAccel;                 // accel to add when the player uturning
     [Header("airParameter")]
     [SerializeField] float airMovSpeedMax;             //The max movement speed when in the air
     [SerializeField] float airMovAccelMax;             //The maximum change in velocity the player can do in the air. This determines how responsive the character will be in the air.
     [SerializeField] float airMovDeccelMax;            //the maximum change in velocity grounded when player is "free" ( no imput command)
     [SerializeField] float fallingAccel;               //the acceleration when push down 
-
+    [Header("Wall")]
+    [SerializeField] float wallClimbMaxSped;           //wallmaxspeedwhen on a wall
+    [SerializeField] float wallClimAccel;              //wallmaxaccel on a wall
+    [SerializeField] float wallfalingReductionAccel;   //wallfalling reduction acce
     [Header("Jump")]
-    [SerializeField] float initialJumpAccel;        //The force applied to the player when starting to jump
+    [SerializeField] float initialJumpAccel;            //The force applied to the player when starting to jump
     [SerializeField] float jumpDelay;
     [SerializeField] float jumpHeight;
     [Header("Ground detection")]
-    [SerializeField] float groundCastRadius;                //Radius of the circle when doing the circle cast to check for the ground
-    [SerializeField] float groundDistanceDetection;          //Distance of the circle cast
+    [SerializeField] float groundCastRadius;            //Radius of the circle when doing the circle cast to check for the ground
+    [SerializeField] float groundDistanceDetection;     //Distance of the circle cast
     
     [Header("Faling parameter")]    
-    [SerializeField] float gravityAccel;            //change in velovity (y) due to gravity 
-    [SerializeField] float maxFallingSpeed;         // maximum speed the object can acces in y 
+    [SerializeField] float gravityAccel;                //change in velovity (y) due to gravity 
+    [SerializeField] float maxFallingSpeed;             // maximum speed the object can acces in y 
 
     [SerializeField] LayerMask platformLayer;
 
@@ -83,12 +86,17 @@ public class Playercontroler : MonoBehaviour
         }
         else
         {
-            if (IsGrounded() || _dir.y > 0) { //can fall aster only is press y down side and on the air 
-                _dir.y = 0;
-            }
             float maxAccel = (IsGrounded() ? movAccelMax : airMovAccelMax);
             float maxSpeed = (IsGrounded() ? movSpeedMax : airMovSpeedMax);
-            ComputeVelocity(new Vector2(maxSpeed,float.PositiveInfinity), new Vector2(maxAccel,fallingAccel), _dir);
+            if (! IsGrounded() || _dir.y < 0) { //can fall aster only is press y down side and on the air 
+                ComputeVelocity(new Vector2(maxSpeed, float.PositiveInfinity), new Vector2(maxAccel, fallingAccel), _dir);
+            }
+            if(false || _dir.y > 0) //wall climb
+            {
+               // ComputeVelocity(new Vector2(maxSpeed, float.PositiveInfinity), new Vector2(maxAccel, fallingAccel), _dir);
+            } 
+          
+           // ComputeVelocity(new Vector2(maxSpeed,float.PositiveInfinity), new Vector2(maxAccel,fallingAccel), _dir);
 
             
             //TODO : faire que ça desende plus vite quand on apuis vers le bas
