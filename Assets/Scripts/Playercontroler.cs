@@ -22,6 +22,7 @@ public class Playercontroler : MonoBehaviour
     [SerializeField] float airMovAccelMax;             //The maximum change in velocity the player can do in the air. This determines how responsive the character will be in the air.
     [SerializeField] float airMovDeccelMax;            //the maximum change in velocity grounded when player is "free" ( no imput command)
     [SerializeField] float fallingAccel;               //the acceleration when push down 
+
     [Header("Jump")]
     [SerializeField] float initialJumpAccel;        //The force applied to the player when starting to jump
     [SerializeField] float jumpDelay;
@@ -71,7 +72,6 @@ public class Playercontroler : MonoBehaviour
     void ApplyVelocity()
     {
         transform.position += new Vector3(currentVelocity.x, currentVelocity.y, 0) * Time.deltaTime;
-        Debug.Log("vitess: " + currentVelocity);
     }
 
     public void Move(Vector2 _dir)
@@ -83,9 +83,13 @@ public class Playercontroler : MonoBehaviour
         }
         else
         {
+            if (IsGrounded() || _dir.y > 0) { //can fall aster only is press y down side and on the air 
+                _dir.y = 0;
+            }
             float maxAccel = (IsGrounded() ? movAccelMax : airMovAccelMax);
             float maxSpeed = (IsGrounded() ? movSpeedMax : airMovSpeedMax);
-            ComputeVelocity(new Vector2(maxSpeed,0f), new Vector2(maxAccel,0f), _dir);
+            ComputeVelocity(new Vector2(maxSpeed,float.PositiveInfinity), new Vector2(maxAccel,fallingAccel), _dir);
+
             
             //TODO : faire que ça desende plus vite quand on apuis vers le bas
             //TODO : faire un acceleration suplementaire pour les demis tours 
@@ -123,6 +127,7 @@ public class Playercontroler : MonoBehaviour
             }
         }
         //Handel Y Velocity
+        
         if(normedDirection.y != 0 ) {  //modifie volocity only if we have an order on this direction
             if ((signedAcceleration.y > 0 && computedVelocity.y < signedTargetVelocity.y) || (signedAcceleration.y < 0 && computedVelocity.y > signedTargetVelocity.y))
             {
