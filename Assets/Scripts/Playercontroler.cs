@@ -59,17 +59,14 @@ public class Playercontroler : MonoBehaviour
 
     void FixedUpdate()
     {
-        ApplyGravity();
-        ApplyVelocity();
-    }
-
-    void ApplyGravity()
-    {
         ComputeGravity();
+        HandleCollisions();
+        ApplyVelocity();
     }
 
     void ApplyVelocity()
     {
+        Debug.Log(currentVelocity);
         transform.position += new Vector3(currentVelocity.x, currentVelocity.y, 0) * Time.deltaTime;
     }
 
@@ -134,23 +131,12 @@ public class Playercontroler : MonoBehaviour
         return false;
     }
 
+    /**
+     * Add the effect of gravity to current velocity.
+     */
     void ComputeGravity()
     {
-        float resultingVerticalVelocity = currentVelocity.y + gravityAccel * Time.deltaTime;
-
-        RaycastHit2D bottomHit = BottomCollision(resultingVerticalVelocity);
-        if (bottomHit.collider != null)
-        {
-            if (currentVelocity.y < 0)
-            {
-                currentVelocity.y = 0f;
-            }
-            transform.position += Vector3.down * (bottomHit.distance);
-        }
-        else
-        {
-            currentVelocity.y = resultingVerticalVelocity;
-        }
+        currentVelocity += Vector2.down * gravityAccel;
     }
 
     bool IsGrounded()
@@ -159,10 +145,31 @@ public class Playercontroler : MonoBehaviour
         return raycastHit.collider != null;
     }
 
-    RaycastHit2D BottomCollision(float verticalVelocity)
+    /**
+     * Handle collisions and snaps the player to walls and platforms.
+     */
+    void HandleCollisions()
     {
-        RaycastHit2D raycastHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.down, verticalVelocity, platformLayer);
-        return raycastHit;
+        ContactFilter2D filter = new ContactFilter2D()
+        {
+            layerMask = platformLayer,
+            useTriggers = true
+        };
+
+        RaycastHit2D[] raycastHits = new RaycastHit2D[4];
+        int num = playerCollider.Cast(currentVelocity.normalized, filter, raycastHits, currentVelocity.magnitude * Time.deltaTime);
+        Debug.Log(num);
+
+        for(int i = 0; i < num; ++i)
+        {
+            Debug.Log(raycastHits[i].collider);
+            if (Vector2.Dot(currentVelocity, raycastHits[i].normal) < 0)
+            {
+                transform.position += new Vector3(currentVelocity.normalized.x, currentVelocity.normalized.y) * raycastHits[i].distance;
+                currentVelocity -= raycastHits[i].normal * Vector2.Dot(currentVelocity, raycastHits[i].normal);
+            }
+            
+        }
     }
 
     public void Jump() // jump if the player is grounder and start a timer for the jump
@@ -173,32 +180,5 @@ public class Playercontroler : MonoBehaviour
         }
 
         //StartCoroutine(JumpCoroutine());
-    }
-
-    IEnumerator JumpCoroutine()
-    {
-        canJump = false;
-
-        while (ComputeJump(jumpHeight, initialJumpAccel)) {}
-        yield return null;
-    }
-
-    IEnumerator JumpCoroutine2() //Jump timer 
-    {
-        //true if the player is holding the Jump button down
-        canJump = false;
-
-        //Counts for how long we've been jumping
-        float jumpTimeCounter = 0;
-
-        while (jumpTimeCounter <= jumpDelay)
-        {
-            ComputeJump(jumpHeight, initialJumpAccel);
-            jumpTimeCounter += Time.deltaTime;
-
-        }
-        canJump = true; 
-        yield return null;
-        
     }
 }

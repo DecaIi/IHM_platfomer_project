@@ -26,7 +26,7 @@ public class CollisionHandler : MonoBehaviour
         };
 
         RaycastHit2D[] hits = new RaycastHit2D[4];
-        int numHits = collider.Cast(player.Velocity, hits, player.Velocity.magnitude * Time.deltaTime);
+        int numHits = collider.Cast(player.Velocity, filter, hits, player.Velocity.magnitude * Time.deltaTime);
 
         Debug.Log(numHits);
 
