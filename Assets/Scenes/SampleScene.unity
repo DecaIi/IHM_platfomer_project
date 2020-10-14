@@ -245,7 +245,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 25001509}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.61, y: -0.09, z: 0}
+  m_LocalPosition: {x: 4.51, y: -2.18, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -457,8 +457,12 @@ MonoBehaviour:
   jumpHeight: 3
   groundCastRadius: 0.33
   groundDistanceDetection: 0
-  gravityAccel: 0.001
+  gravityAccel: 1
   maxFallingSpeed: 3
+  leftContactDistance: 0.01
+  rightContactDistance: 0.01
+  bottomContactDistance: 0.01
+  topContactDistance: 0.01
   platformLayer:
     serializedVersion: 2
     m_Bits: 256

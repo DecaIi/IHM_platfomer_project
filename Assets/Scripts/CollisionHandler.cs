@@ -3,14 +3,64 @@ using System.Collections.Generic;
 using System.IO.MemoryMappedFiles;
 using UnityEngine;
 
+
 [RequireComponent(typeof(Playercontroler))]
 [RequireComponent(typeof(Collider2D))]
 public class CollisionHandler : MonoBehaviour
 {
+    public enum Side
+    {
+        Left,
+        Right,
+        Bottom,
+        Top,
+        Count
+    }
+
+    public struct Contacts
+    {
+        private bool[] contacts;
+
+        public Contacts(int sideCount)
+        {
+            contacts = new bool[sideCount];
+
+            for (int i = 0; i < contacts.Length; ++i)
+            {
+                contacts[i] = false;
+            }
+        }
+
+        public override string ToString()
+        {
+            string text = "Contacts: ";
+
+            foreach (bool contact in contacts)
+            {
+                text += contact + " ";
+            }
+            return text;
+        }
+
+        // Error prone
+        public bool this[Side side]
+        {
+            get { return contacts[(int)side]; }
+            set { contacts[(int)side] = value; }
+        }
+    }
+
     [SerializeField] LayerMask platformLayer;
+    [SerializeField] int rayCastsPerSide;
+
+    [Header("Contacts distances")]
+    [SerializeField] float contactDistance;
 
     Playercontroler player;
     Collider2D collider;
+
+    Vector2[] unitVectors2D = { Vector2.left, Vector2.right, Vector2.down, Vector2.up };
+    bool[] contacts = { false, false, false, false };
 
     void Start()
     {
@@ -20,24 +70,20 @@ public class CollisionHandler : MonoBehaviour
 
     void FixedUpdate()
     {
-        ContactFilter2D filter = new ContactFilter2D()
+        
+    }
+
+    bool Cast(Vector3 direction)
+    {
+        bool result = false;
+        int i = 0;
+
+        while (result == false && i < rayCastsPerSide)
         {
-            layerMask = platformLayer
-        };
-
-        RaycastHit2D[] hits = new RaycastHit2D[4];
-        int numHits = collider.Cast(player.Velocity, filter, hits, player.Velocity.magnitude * Time.deltaTime);
-
-        Debug.Log(numHits);
-
-        if (numHits > 0)
-        {
-            //player.IsGrounded = true;
-            player.transform.position = player.Velocity.normalized * hits[0].distance + new Vector2(collider.bounds.center.x, collider.bounds.center.y);
+            result = Physics2D.Raycast(collider.bounds.center - Vector3.Dot(direction, collider.bounds.extents) * direction + direction * i * Vector3.Dot(direction, collider.bounds.extents) / (i + 1), direction, contactDistance, platformLayer).collider != null;
+            ++i;
         }
-        else
-        {
-            //player.IsGrounded = false;
-        }
+
+        return result;
     }
 }

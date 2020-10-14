@@ -36,9 +36,12 @@ public class Playercontroler : MonoBehaviour
 
     [SerializeField] LayerMask platformLayer;
 
+    ContactFilter2D filter;
+
     Collider2D playerCollider;
     
     Vector2 currentVelocity;
+    
 
     public Vector2 Velocity
     {
@@ -50,6 +53,11 @@ public class Playercontroler : MonoBehaviour
     void Awake()
     {
         playerCollider = GetComponent<Collider2D>();
+        filter = new ContactFilter2D()
+        {
+            layerMask = platformLayer,
+            useTriggers = true
+        };
     }
 
     void Start()
@@ -59,6 +67,7 @@ public class Playercontroler : MonoBehaviour
 
     void FixedUpdate()
     {
+        UpdateContacts();
         ComputeGravity();
         HandleCollisions();
         ApplyVelocity();
@@ -66,7 +75,6 @@ public class Playercontroler : MonoBehaviour
 
     void ApplyVelocity()
     {
-        Debug.Log(currentVelocity);
         transform.position += new Vector3(currentVelocity.x, currentVelocity.y, 0) * Time.deltaTime;
     }
 
@@ -145,20 +153,23 @@ public class Playercontroler : MonoBehaviour
         return raycastHit.collider != null;
     }
 
+    void UpdateContacts()
+    {
+        Debug.Log(Physics2D.BoxCast(new Vector2(playerCollider.bounds.center.x + playerCollider.bounds.extents.x, playerCollider.bounds.center.y), playerCollider.bounds.size, 0f, Vector2.left, leftContactDistance, platformLayer).collider);
+
+        contacts.left = Physics2D.BoxCast(new Vector2(playerCollider.bounds.center.x + playerCollider.bounds.extents.x, playerCollider.bounds.center.y), playerCollider.bounds.size, 0f, Vector2.left, leftContactDistance, platformLayer).collider != null;
+        contacts.right = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.right, rightContactDistance, platformLayer).collider != null;
+        contacts.bottom = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.down, bottomContactDistance, platformLayer).collider != null;
+        contacts.top = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.up, topContactDistance, platformLayer).collider != null;
+    }
+
     /**
      * Handle collisions and snaps the player to walls and platforms.
      */
     void HandleCollisions()
     {
-        ContactFilter2D filter = new ContactFilter2D()
-        {
-            layerMask = platformLayer,
-            useTriggers = true
-        };
-
         RaycastHit2D[] raycastHits = new RaycastHit2D[4];
         int num = playerCollider.Cast(currentVelocity.normalized, filter, raycastHits, currentVelocity.magnitude * Time.deltaTime);
-        Debug.Log(num);
 
         for(int i = 0; i < num; ++i)
         {
@@ -168,7 +179,6 @@ public class Playercontroler : MonoBehaviour
                 transform.position += new Vector3(currentVelocity.normalized.x, currentVelocity.normalized.y) * raycastHits[i].distance;
                 currentVelocity -= raycastHits[i].normal * Vector2.Dot(currentVelocity, raycastHits[i].normal);
             }
-            
         }
     }
 
