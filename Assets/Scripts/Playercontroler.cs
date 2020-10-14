@@ -39,13 +39,14 @@ public class Playercontroler : MonoBehaviour
     ContactFilter2D filter;
 
     Collider2D playerCollider;
+    ContactHandler contactHanlder;
     
     Vector2 currentVelocity;
-    
 
     public Vector2 Velocity
     {
         get { return currentVelocity; }
+        private set { currentVelocity = value; }
     }
 
     bool canJump = true;
@@ -53,6 +54,8 @@ public class Playercontroler : MonoBehaviour
     void Awake()
     {
         playerCollider = GetComponent<Collider2D>();
+        contactHanlder = GetComponent<ContactHandler>();
+
         filter = new ContactFilter2D()
         {
             layerMask = platformLayer,
@@ -67,7 +70,7 @@ public class Playercontroler : MonoBehaviour
 
     void FixedUpdate()
     {
-        UpdateContacts();
+        Debug.Log(contactHanlder.Contacts);
         ComputeGravity();
         HandleCollisions();
         ApplyVelocity();
@@ -82,13 +85,13 @@ public class Playercontroler : MonoBehaviour
     {
         if (_dir.x == 0 && _dir.y == 0) //no movment imput 
         {
-            float deceleration = IsGrounded() ? movDeccelMax : airMovDeccelMax;
+            float deceleration = contactHanlder.Contacts.Bottom ? movDeccelMax : airMovDeccelMax;
             ComputeVelocity(0f, -deceleration, currentVelocity.x);
         }
         else
         {
-            float maxAccel = (IsGrounded() ? movAccelMax : airMovAccelMax);
-            float maxSpeed = (IsGrounded() ? movSpeedMax : airMovSpeedMax);
+            float maxAccel = (contactHanlder.Contacts.Bottom ? movAccelMax : airMovAccelMax);
+            float maxSpeed = (contactHanlder.Contacts.Bottom ? movSpeedMax : airMovSpeedMax);
             ComputeVelocity(maxSpeed, maxAccel, _dir.x);
             //TODO : faire que ça desende plus vite quand on apuis vers le bas
             //TODO : faire un acceleration suplementaire pour les demis tours 
@@ -147,22 +150,6 @@ public class Playercontroler : MonoBehaviour
         currentVelocity += Vector2.down * gravityAccel;
     }
 
-    bool IsGrounded()
-    {
-        RaycastHit2D raycastHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.down, groundDistanceDetection, platformLayer);
-        return raycastHit.collider != null;
-    }
-
-    void UpdateContacts()
-    {
-        Debug.Log(Physics2D.BoxCast(new Vector2(playerCollider.bounds.center.x + playerCollider.bounds.extents.x, playerCollider.bounds.center.y), playerCollider.bounds.size, 0f, Vector2.left, leftContactDistance, platformLayer).collider);
-
-        contacts.left = Physics2D.BoxCast(new Vector2(playerCollider.bounds.center.x + playerCollider.bounds.extents.x, playerCollider.bounds.center.y), playerCollider.bounds.size, 0f, Vector2.left, leftContactDistance, platformLayer).collider != null;
-        contacts.right = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.right, rightContactDistance, platformLayer).collider != null;
-        contacts.bottom = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.down, bottomContactDistance, platformLayer).collider != null;
-        contacts.top = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.up, topContactDistance, platformLayer).collider != null;
-    }
-
     /**
      * Handle collisions and snaps the player to walls and platforms.
      */
@@ -173,7 +160,6 @@ public class Playercontroler : MonoBehaviour
 
         for(int i = 0; i < num; ++i)
         {
-            Debug.Log(raycastHits[i].collider);
             if (Vector2.Dot(currentVelocity, raycastHits[i].normal) < 0)
             {
                 transform.position += new Vector3(currentVelocity.normalized.x, currentVelocity.normalized.y) * raycastHits[i].distance;
@@ -184,7 +170,7 @@ public class Playercontroler : MonoBehaviour
 
     public void Jump() // jump if the player is grounder and start a timer for the jump
     {
-        if (!IsGrounded() || !canJump)
+        if (!contactHanlder.Contacts.Bottom || !canJump)
         {
             return;
         }
