@@ -4,46 +4,35 @@ using System.IO.MemoryMappedFiles;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
+/*
+ * Struct to hold contact data.
+ */
 public struct Contacts
 {
-    private readonly bool leftContact;
-    private readonly bool rightContact;
-    private readonly bool bottomContact;
-    private readonly bool topContact;
-
     public Contacts(bool left, bool right, bool bottom, bool top)
     {
-        leftContact = left;
-        rightContact = right;
-        bottomContact = bottom;
-        topContact = top;
+        Left = left;
+        Right = right;
+        Bottom = bottom;
+        Top = top;
     }
 
-    public bool Left
-    {
-        get { return leftContact; }
-    }
+    public bool Left { get; }
 
-    public bool Right
-    {
-        get { return rightContact; }
-    }
+    public bool Right { get; }
 
-    public bool Bottom
-    {
-        get { return bottomContact; }
-    }
+    public bool Bottom { get; }
 
-    public bool Top
-    {
-        get { return topContact; }
-    }
+    public bool Top { get; }
 
     public override string ToString()
     {
-        return "Contacts: (Left: " + leftContact + " Right: " + rightContact + " Bottom: " + bottomContact + " Top: " + topContact + ")";
+        return "Contacts: (Left: " + Left + " Right: " + Right + " Bottom: " + Bottom + " Top: " + Top + ")";
     }
 
+    /*
+     * Returns a Contacts struct with every side at false.
+     */
     public static Contacts None()
     {
         return new Contacts(false, false, false, false);
