@@ -525,7 +525,7 @@ MonoBehaviour:
   airMovSpeedMax: 20
   airMovAccelMax: 2
   airMovDeccelMax: 0
-  fallingAccel: 0
+  fallingAccel: 3
   initialJumpAccel: 0.01
   jumpDelay: 0.5
   jumpHeight: 3
