@@ -108,8 +108,7 @@ public class Playercontroler : MonoBehaviour
             }
                     
             ComputeVelocity(new Vector2(maxSpeed,float.PositiveInfinity), new Vector2(maxAccel,fallingAccel), _dir);
-            //TODO : faire que ça desende plus vite quand on apuis vers le bas
-            //TODO : faire un acceleration suplementaire pour les demis tours 
+            
         }
     }
     
@@ -190,7 +189,6 @@ public void Jump() // jump if the player is grounder and start a timer for the j
         {
             return;
         }
-        Debug.LogWarning("Jump");
         currentVelocity.y += initialJumpAccel * Time.deltaTime;
         StartCoroutine(JumpCoroutine());
         
