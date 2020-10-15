@@ -17,16 +17,17 @@ public class ImputControler : MonoBehaviour
     float leftVertical;
     float padHorizontal;
     float padVertical;
-
+    bool dash;
     void Update()
     {
-        if (Input.GetButton("A"))
+        dash = false;
+        if (Input.GetButton("A")) //jum^p
         {
             playerControler.Jump(); 
         }
-        if (Input.GetButton("B"))
-        {                
-                //nothing yet 
+        if (Input.GetButton("B")) //dash
+        {
+            dash = true;
         }
         if (Input.GetButton("X"))
         {                 
@@ -43,7 +44,11 @@ public class ImputControler : MonoBehaviour
         padVertical = Input.GetAxis("CrossVertical");
 
         output  = new Vector2(Mathf.Clamp(leftHorizontal + padHorizontal, -1, 1) , Mathf.Clamp(leftVertical + padVertical, -1, 1) );
-        
+        if (dash) //in case of dash
+        {
+            playerControler.Dash(output);
+            return;
+        }
         playerControler.Move(output);
     }
 

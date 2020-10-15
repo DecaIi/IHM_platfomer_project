@@ -30,6 +30,11 @@ public class Playercontroler : MonoBehaviour
     [SerializeField] float initialJumpAccel;            //The force applied to the player when starting to jump
     [SerializeField] float jumpDelay;
     [SerializeField] float jumpHeight;
+    
+    [Header("Dash")]
+    [SerializeField] float initialDashAccel;            //The force applied to the player when starting to jump
+    [SerializeField] float DashDelay;
+
     [Header("Ground detection")]
     [SerializeField] float groundCastRadius;            //Radius of the circle when doing the circle cast to check for the ground
     [SerializeField] float groundDistanceDetection;     //Distance of the circle cast
@@ -41,6 +46,7 @@ public class Playercontroler : MonoBehaviour
     [SerializeField] LayerMask platformLayer;
 
     ContactFilter2D filter;
+    
 
     Collider2D playerCollider;
     ContactHandler contactHanlder;
@@ -54,6 +60,7 @@ public class Playercontroler : MonoBehaviour
     }
 
     bool canJump = true;
+    bool canDash = true;
 
     void Awake()
     {
@@ -96,7 +103,7 @@ public class Playercontroler : MonoBehaviour
         {
             float maxAccel = (contactHanlder.Contacts.Bottom ? movAccelMax : airMovAccelMax);
             float maxSpeed = (contactHanlder.Contacts.Bottom ? movSpeedMax : airMovSpeedMax);
-            if (!contactHanlder.Contacts.Bottom || _dir.y < 0)
+            if (!contactHanlder.Contacts.Bottom && _dir.y < 0)
             { //can fall aster only is press y down side and on the air 
                 ComputeVelocity(new Vector2(maxSpeed, float.PositiveInfinity), new Vector2(maxAccel, fallingAccel), _dir);
                 return;
@@ -107,7 +114,7 @@ public class Playercontroler : MonoBehaviour
                 return;
             }
                     
-            ComputeVelocity(new Vector2(maxSpeed,float.PositiveInfinity), new Vector2(maxAccel,fallingAccel), _dir);
+            ComputeVelocity(new Vector2(maxSpeed,0), new Vector2(maxAccel,0), new Vector2(_dir.x , 0 ));  //only x movment
             
         }
     }
@@ -189,27 +196,35 @@ public void Jump() // jump if the player is grounder and start a timer for the j
         {
             return;
         }
-        currentVelocity.y += initialJumpAccel * Time.deltaTime;
+        Debug.LogWarning(!contactHanlder.Contacts.Bottom || !canJump);
+        canJump = false;
+        currentVelocity.y += initialJumpAccel ;
         StartCoroutine(JumpCoroutine());
         
     }
     IEnumerator JumpCoroutine() //Jump timer 
     {
-        //true if the player is holding the Jump button down
-        canJump = false;
-
         //Counts for how long we've been jumping
-        float jumpTimeCounter = 0;
-
-        while (jumpTimeCounter <= jumpDelay)
-        {
-            jumpTimeCounter += Time.deltaTime;
-
-        }
+        new WaitForSecondsRealtime(jumpDelay); // wait jumpDelay second 
         canJump = true;
         yield return null;
+        
 
     }
-
-
+public void Dash(Vector2 _dir)
+    {
+        if (!canDash)
+            return;
+        canJump = false;
+        currentVelocity = _dir * initialDashAccel;
+        StartCoroutine(DashRecoverCoroutine());
+    }
+IEnumerator DashRecoverCoroutine()
+    {
+        new WaitForSecondsRealtime(DashDelay); // fait for dashdelaysecond
+        new WaitWhile(() =>!contactHanlder.Contacts.Bottom); // wait until contact bottom = true 
+        canDash = true;
+        yield return null;
+    }
+    
 }

@@ -519,19 +519,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movSpeedMax: 200
-  movAccelMax: 1
-  movDeccelMax: 1
-  uTurnAccel: 0
+  movAccelMax: 10
+  movDeccelMax: 5
+  uTurnAccel: 5
   airMovSpeedMax: 20
-  airMovAccelMax: 2
-  airMovDeccelMax: 0
-  fallingAccel: 3
-  initialJumpAccel: 0.01
+  airMovAccelMax: 5
+  airMovDeccelMax: 10
+  fallingAccel: 5
+  wallClimbMaxSped: 200
+  wallClimAccel: 10
+  wallfalingReductionAccel: 0
+  initialJumpAccel: 20
   jumpDelay: 0.5
   jumpHeight: 3
+  initialDashAccel: 30
   groundCastRadius: 0.33
   groundDistanceDetection: 0
-  gravityAccel: 1
+  gravityAccel: 0.1
   maxFallingSpeed: 3
   platformLayer:
     serializedVersion: 2
