@@ -529,10 +529,11 @@ MonoBehaviour:
   wallClimbMaxSped: 200
   wallClimAccel: 10
   wallfalingReductionAccel: 0
-  initialJumpAccel: 20
+  initialJumpAccel: 5
   jumpDelay: 0.5
   jumpHeight: 3
   initialDashAccel: 30
+  DashDelay: 0
   groundCastRadius: 0.33
   groundDistanceDetection: 0
   gravityAccel: 0.1

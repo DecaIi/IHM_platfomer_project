@@ -81,7 +81,6 @@ public class Playercontroler : MonoBehaviour
 
     void FixedUpdate()
     {
-        Debug.Log(contactHanlder.Contacts);
         ComputeGravity();
         HandleCollisions();
         ApplyVelocity();
@@ -191,26 +190,26 @@ public class Playercontroler : MonoBehaviour
     }
 
 public void Jump() // jump if the player is grounder and start a timer for the jump
+{
+    if (!contactHanlder.Contacts.Bottom || !canJump)
     {
-        if (!contactHanlder.Contacts.Bottom || !canJump)
-        {
-            return;
-        }
-        Debug.LogWarning(!contactHanlder.Contacts.Bottom || !canJump);
-        canJump = false;
-        currentVelocity.y += initialJumpAccel ;
-        StartCoroutine(JumpCoroutine());
-        
+        return;
     }
-    IEnumerator JumpCoroutine() //Jump timer 
-    {
-        //Counts for how long we've been jumping
-        new WaitForSecondsRealtime(jumpDelay); // wait jumpDelay second 
-        canJump = true;
-        yield return null;
+    Debug.Log("Called " + Time.frameCount);
+    canJump = false;
+    currentVelocity.y += initialJumpAccel ;
+    StartCoroutine(JumpCoroutine());
         
+}
 
-    }
+IEnumerator JumpCoroutine() //Jump timer 
+{
+    //Counts for how long we've been jumping
+    yield return new WaitForSeconds(jumpDelay); // wait jumpDelay second 
+    canJump = true;
+    yield return null;
+}
+
 public void Dash(Vector2 _dir)
     {
         if (!canDash)
