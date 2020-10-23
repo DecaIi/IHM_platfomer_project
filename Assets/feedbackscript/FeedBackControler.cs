@@ -5,6 +5,8 @@ using UnityEngine;
 public class FeedBackControler : MonoBehaviour
 {
     [SerializeField] Camera playerCamera;
+    [SerializeField] float shakeDuration;
+    [SerializeField] float shakeIntensity;
     [SerializeField] ParticleSystem ParticleSystem;
     Camerashake camerashake;
     private void Start()
@@ -13,7 +15,7 @@ public class FeedBackControler : MonoBehaviour
     }
     public void  CameraSharke()
     {
-        camerashake.Shake();
+        camerashake.Shake(shakeDuration,shakeIntensity);
     }
     public void InstanciateDashPrefabOnPosition(Vector3 position)
     {

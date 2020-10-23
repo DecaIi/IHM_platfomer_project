@@ -34,8 +34,8 @@ public class Playercontroler : MonoBehaviour
     
     [Header("Dash")]
     [SerializeField] float initialDashAccel;            //The force applied to the player when starting to jump
-    [SerializeField] float DashDelay;
-
+    [SerializeField] float dashDelay;
+    [SerializeField] float dashDuration;                //Duration of the dash 
     [Header("Ground detection")]
     [SerializeField] float groundCastRadius;            //Radius of the circle when doing the circle cast to check for the ground
     [SerializeField] float groundDistanceDetection;     //Distance of the circle cast
@@ -55,6 +55,7 @@ public class Playercontroler : MonoBehaviour
     FeedBackControler feedBackControler;
     
     Vector2 currentVelocity;
+    Vector2 dashVelocity;
 
     public Vector2 Velocity
     {
@@ -78,6 +79,7 @@ public class Playercontroler : MonoBehaviour
         };
 
         currentVelocity = new Vector2(0, 0);
+        dashVelocity = new Vector2(0, 0);
     }
 
     void FixedUpdate()
@@ -108,7 +110,7 @@ public class Playercontroler : MonoBehaviour
                 ComputeVelocity(new Vector2(maxSpeed, float.PositiveInfinity), new Vector2(maxAccel, fallingAccel), _dir);
                 return;
             }
-            if ((contactHanlder.Contacts.Left ||contactHanlder.Contacts.Right) && _dir.y > 0) //wall climb
+            if ((contactHanlder.Contacts.Left || contactHanlder.Contacts.Right) && _dir.y > 0) //wall climb
             {
                 ComputeVelocity(new Vector2(maxSpeed, wallClimbMaxSped), new Vector2(maxAccel, wallClimAccel), _dir);
                 return;
@@ -190,65 +192,88 @@ public class Playercontroler : MonoBehaviour
         }
     }
 
-public void Jump() // jump if the player is grounder and start a timer for the jump
-{
-    if (!canJump)
+    public void Jump() // jump if the player is grounder and start a timer for the jump
     {
-        return;
-    }
-    //we gona jump 
-    canJump = false;
+        if (!canJump)
+        {
+            return;
+        }
+        canJump = false;
 
-    if (contactHanlder.Contacts.Bottom)
-    {
-        currentVelocity += Vector2.up * initialJumpAccel;
-    }
-    else if (contactHanlder.Contacts.Left)
-    {
-        currentVelocity += sideJumpAccel;
-    }
-    else if (contactHanlder.Contacts.Right)
-    {
-        currentVelocity += sideJumpAccel;
-    }
-    dashFeedback();
-    StartCoroutine(JumpCoroutine());
+        if (contactHanlder.Contacts.Bottom)
+        {
+            currentVelocity += Vector2.up * initialJumpAccel;
+        }
+        else if (contactHanlder.Contacts.Left)
+        {
+            currentVelocity += sideJumpAccel;
+        }
+        else if (contactHanlder.Contacts.Right)
+        {
+            currentVelocity += sideJumpAccel;
+        }
+        StartCoroutine(JumpCoroutine());
         
-}
+    }
+
+    IEnumerator JumpCoroutine() //Jump timer 
+    {
+        //Counts for how long we've been jumping
+        yield return new WaitForSeconds(jumpDelay); // wait jumpDelay second 
+        canJump = true;
+        yield return null;
+    }
+
+    public void Dash(Vector2 _dir)
+    {
+        if (!canDash || _dir.x == 0 && _dir.y == 0)  // if dir x and dir y ar equal to 0 it's not realy a dash 
+        {
+            //Debug.Log("Cant dash");
+            return;
+        }
+        else
+        {
+            Debug.Log("Dash!");
+            canDash = false;
+            currentVelocity += _dir * initialDashAccel;
+            StartCoroutine(Unlimitedspeed());
+            StartCoroutine(DashRecoverCoroutine());
+            dashFeedback();
+            StartCoroutine(JumpCoroutine());
+        }
+    }
     /** Function to call to generat feedback for the dash 
      * 
      */
-void dashFeedback()
+    void dashFeedback()
     {
         feedBackControler.CameraSharke();
         feedBackControler.InstanciateDashPrefabOnPosition(transform.position + new Vector3(0, transform.localScale.y, 0) / 2);
     }
 
 
-IEnumerator JumpCoroutine() //Jump timer 
-{
-    //Counts for how long we've been jumping
-    yield return new WaitForSeconds(jumpDelay); // wait jumpDelay second 
-    canJump = true;
-    yield return null;
-}
+    /**
+     * to call when speed is unlimited 
+     */
+    IEnumerator Unlimitedspeed()
+    {
+        movSpeedMax += initialDashAccel;            //prevent from clamping the sped for the dash 
+        airMovSpeedMax += initialDashAccel;
+        yield return new WaitForSeconds(dashDuration);
+        movSpeedMax -= initialDashAccel;            //prevent from clamping the sped for the dash 
+        airMovSpeedMax -= initialDashAccel;
+    }
 
-public void Dash(Vector2 _dir)
-{
-    if (!canDash)
-        return;
-    currentVelocity = _dir * initialDashAccel;
-    canDash = false;
-    StartCoroutine(DashRecoverCoroutine());
-}
 
-IEnumerator DashRecoverCoroutine()
-{
-    yield return new WaitForSecondsRealtime(DashDelay); // fait for dashdelaysecond
-    yield return new WaitWhile(() =>!contactHanlder.Contacts.Bottom); // wait until contact bottom = true 
-    canDash = true;
-    //canJump = true;
-    yield return null;
-}
+
+    IEnumerator DashRecoverCoroutine()
+    {
+        yield return new WaitForSecondsRealtime(dashDelay); // fait for dashdelaysecond
+        yield return new WaitWhile(() =>!contactHanlder.Contacts.Bottom); // wait until contact bottom = true 
+        canDash = true;
+        //canJump = true;
+        yield return null;
+    }
+
     
 }

@@ -7,12 +7,12 @@ public class Camerashake : MonoBehaviour
 {
 	// Transform of the camera to shake. Grabs the gameObject's transform
 	// if null.
-	
+
 
 
 	// How long the object should shake for.
-	[SerializeField] float shakeDuration = 1f;   // duration of the shake 
-	[SerializeField] float shakeIntensity = 0.7f;
+	float shakeDuration;
+	float shakeIntensity;
 
 	Vector3 originalPos;
 	bool canshake = true;
@@ -23,8 +23,10 @@ public class Camerashake : MonoBehaviour
 		shakeTime = shakeDuration;
 	}
 	
-	public void Shake()
+	public void Shake(float shakeDuration, float shakeIntensity )
     {
+		this.shakeDuration = shakeDuration;
+		this.shakeIntensity = shakeIntensity;
 		if (canshake)
 		{
 			canshake = false;
