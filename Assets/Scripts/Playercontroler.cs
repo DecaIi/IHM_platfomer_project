@@ -88,7 +88,7 @@ public class Playercontroler : MonoBehaviour
   
     void ApplyVelocity()
     {
-        transform.position += new Vector3(currentVelocity.x + dashVelocity.x, currentVelocity.y + dashVelocity.y, 0) * Time.deltaTime;
+        transform.position += new Vector3(currentVelocity.x, currentVelocity.y, 0) * Time.deltaTime;
     }
 
     public void Move(Vector2 _dir)
@@ -233,7 +233,7 @@ public class Playercontroler : MonoBehaviour
         {
             Debug.Log("Dash!");
             canDash = false;
-            currentVelocity = _dir * initialDashAccel;
+            currentVelocity += _dir * initialDashAccel;
             StartCoroutine(Unlimitedspeed());
             StartCoroutine(DashRecoverCoroutine());
         }
