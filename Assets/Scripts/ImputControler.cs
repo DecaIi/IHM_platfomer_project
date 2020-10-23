@@ -27,7 +27,7 @@ public class ImputControler : MonoBehaviour
         padVertical = Input.GetAxis("CrossVertical");
         output  = new Vector2(Mathf.Clamp(leftHorizontal + padHorizontal, -1, 1) , Mathf.Clamp(leftVertical + padVertical, -1, 1) );
       
-        if (Input.GetButton("A")) //jum^p
+        if (Input.GetButtonDown("A")) //jum^p
         {
             playerControler.Jump();
         }
