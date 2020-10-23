@@ -19,7 +19,13 @@ public class FeedBackControler : MonoBehaviour
     }
     public void InstanciateDashPrefabOnPosition(Vector3 position)
     {
-        Instantiate(ParticleSystem,position,Quaternion.identity);
+        ParticleSystem o = Instantiate(ParticleSystem,position,Quaternion.identity);
+        StartCoroutine(DestritroyInstance(o, 1));
+    }
+    IEnumerator DestritroyInstance(ParticleSystem ps, float time)
+    {
+        yield return new WaitForSeconds(time);
+        Destroy(ps);
     }
 
 
