@@ -53,6 +53,7 @@ public class Playercontroler : MonoBehaviour
     ContactHandler contactHanlder;
     
     Vector2 currentVelocity;
+    Vector2 dashVelocity;
 
     public Vector2 Velocity
     {
@@ -75,6 +76,7 @@ public class Playercontroler : MonoBehaviour
         };
 
         currentVelocity = new Vector2(0, 0);
+        dashVelocity = new Vector2(0, 0);
     }
 
     void FixedUpdate()
@@ -86,8 +88,7 @@ public class Playercontroler : MonoBehaviour
   
     void ApplyVelocity()
     {
-        Debug.Log(currentVelocity);
-        transform.position += new Vector3(currentVelocity.x, currentVelocity.y, 0) * Time.deltaTime;
+        transform.position += new Vector3(currentVelocity.x + dashVelocity.x, currentVelocity.y + dashVelocity.y, 0) * Time.deltaTime;
     }
 
     public void Move(Vector2 _dir)
@@ -106,7 +107,7 @@ public class Playercontroler : MonoBehaviour
                 ComputeVelocity(new Vector2(maxSpeed, float.PositiveInfinity), new Vector2(maxAccel, fallingAccel), _dir);
                 return;
             }
-            if ((contactHanlder.Contacts.Left ||contactHanlder.Contacts.Right) && _dir.y > 0) //wall climb
+            if ((contactHanlder.Contacts.Left || contactHanlder.Contacts.Right) && _dir.y > 0) //wall climb
             {
                 ComputeVelocity(new Vector2(maxSpeed, wallClimbMaxSped), new Vector2(maxAccel, wallClimAccel), _dir);
                 return;
@@ -230,17 +231,19 @@ public class Playercontroler : MonoBehaviour
         }
         else
         {
-            //Debug.Log("Dash!");
+            Debug.Log("Dash!");
             canDash = false;
-            currentVelocity = _dir * initialDashAccel;
+            dashVelocity = _dir * initialDashAccel;
             StartCoroutine(DashRecoverCoroutine());
         }
     }
 
     IEnumerator DashRecoverCoroutine()
     {
+        yield return new WaitForFixedUpdate();
+        dashVelocity = Vector2.zero;
         yield return new WaitForSeconds(dashDelay); // wait for dashdelaysecond
-        yield return new WaitWhile(() =>!contactHanlder.Contacts.Bottom); // wait until contact bottom = true 
+        yield return new WaitWhile(() => !contactHanlder.Contacts.Bottom); // wait until contact bottom = true 
         canDash = true;
         //canJump = true;
         yield return null;

@@ -772,8 +772,8 @@ MonoBehaviour:
   initialJumpAccel: 15
   sideJumpAccel: {x: 15, y: 30}
   jumpDelay: 0.2
-  initialDashAccel: 30
-  dashDelay: 10
+  initialDashAccel: 60
+  dashDelay: 1
   groundCastRadius: 0.33
   groundDistanceDetection: 0
   gravityAccel: 1
