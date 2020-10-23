@@ -197,13 +197,13 @@ public class Playercontroler : MonoBehaviour
             currentVelocity += Vector2.up * initialJumpAccel;
             StartCoroutine(JumpCoroutineBottom());
         }
-        if (contactHanlder.Contacts.Left && canJumpLeft)
+        else if (contactHanlder.Contacts.Left && canJumpLeft)
         {
             canJumpLeft = false;
             currentVelocity += sideJumpAccel;
             StartCoroutine(JumpCoroutineLeft());
         }
-        if (contactHanlder.Contacts.Right && canJumpRight)
+        else if(contactHanlder.Contacts.Right && canJumpRight)
         {
             canJumpRight = false;
             currentVelocity += new Vector2(-sideJumpAccel.x, sideJumpAccel.y);
