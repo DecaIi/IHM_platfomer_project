@@ -65,6 +65,7 @@ public class Playercontroler : MonoBehaviour
     bool canJump = true;
     bool canDash = true;
 
+    
     void Awake()
     {
         playerCollider = GetComponent<Collider2D>();
@@ -210,10 +211,19 @@ public void Jump() // jump if the player is grounder and start a timer for the j
     {
         currentVelocity += sideJumpAccel;
     }
-    feedBackControler.CameraSharke();
+    dashFeedback();
     StartCoroutine(JumpCoroutine());
         
 }
+    /** Function to call to generat feedback for the dash 
+     * 
+     */
+void dashFeedback()
+    {
+        feedBackControler.CameraSharke();
+        feedBackControler.InstanciateDashPrefabOnPosition(transform.position + new Vector3(0, transform.localScale.y, 0) / 2);
+    }
+
 
 IEnumerator JumpCoroutine() //Jump timer 
 {
