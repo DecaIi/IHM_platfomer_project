@@ -35,7 +35,7 @@ public class Playercontroler : MonoBehaviour
     [Header("Dash")]
     [SerializeField] float initialDashAccel;            //The force applied to the player when starting to jump
     [SerializeField] float dashDelay;
-
+    [SerializeField] float dashDuration;                //Duration of the dash 
     [Header("Ground detection")]
     [SerializeField] float groundCastRadius;            //Radius of the circle when doing the circle cast to check for the ground
     [SerializeField] float groundDistanceDetection;     //Distance of the circle cast
@@ -233,9 +233,23 @@ public class Playercontroler : MonoBehaviour
         {
             Debug.Log("Dash!");
             canDash = false;
-            dashVelocity = _dir * initialDashAccel;
+            currentVelocity = _dir * initialDashAccel;
+            StartCoroutine(Unlimitedspeed());
             StartCoroutine(DashRecoverCoroutine());
         }
+    }
+
+    /**
+     * to call when speed is unlimited 
+     */
+    IEnumerator Unlimitedspeed()
+    {
+        movSpeedMax += initialDashAccel;            //prevent from clamping the sped for the dash 
+        airMovSpeedMax += initialDashAccel;
+        yield return new WaitForSeconds(dashDuration);
+        movSpeedMax -= initialDashAccel;            //prevent from clamping the sped for the dash 
+        airMovSpeedMax -= initialDashAccel;
+
     }
 
     IEnumerator DashRecoverCoroutine()
