@@ -53,7 +53,6 @@ public class Playercontroler : MonoBehaviour
     ContactHandler contactHanlder;
     
     Vector2 currentVelocity;
-    Vector2 dashVelocity;
 
     public Vector2 Velocity
     {
@@ -61,7 +60,9 @@ public class Playercontroler : MonoBehaviour
         private set { currentVelocity = value; }
     }
 
-    bool canJump = true;
+    bool canJumpBottom = true;
+    bool canJumpLeft = true;
+    bool canJumpRight = true;
     bool canDash = true;
 
     void Awake()
@@ -76,7 +77,6 @@ public class Playercontroler : MonoBehaviour
         };
 
         currentVelocity = new Vector2(0, 0);
-        dashVelocity = new Vector2(0, 0);
     }
 
     void FixedUpdate()
@@ -190,35 +190,48 @@ public class Playercontroler : MonoBehaviour
     }
 
     public void Jump() // jump if the player is grounder and start a timer for the jump
-    {
-        if (!canJump)
+    {     
+        if (contactHanlder.Contacts.Bottom && canJumpBottom)
         {
-            return;
-        }
-
-        canJump = false;
-
-        if (contactHanlder.Contacts.Bottom)
-        {
+            canJumpBottom = false;
             currentVelocity += Vector2.up * initialJumpAccel;
+            StartCoroutine(JumpCoroutineBottom());
         }
-        else if (contactHanlder.Contacts.Left)
+        if (contactHanlder.Contacts.Left && canJumpLeft)
         {
+            canJumpLeft = false;
             currentVelocity += sideJumpAccel;
+            StartCoroutine(JumpCoroutineLeft());
         }
-        else if (contactHanlder.Contacts.Right)
+        if (contactHanlder.Contacts.Right && canJumpRight)
         {
-            currentVelocity += sideJumpAccel;
-        }
-        StartCoroutine(JumpCoroutine());
-        
+            canJumpRight = false;
+            currentVelocity += new Vector2(-sideJumpAccel.x, sideJumpAccel.y);
+            StartCoroutine(JumpCoroutineRight());
+        } 
     }
 
-    IEnumerator JumpCoroutine() //Jump timer 
+    IEnumerator JumpCoroutineBottom() //Jump timer 
     {
         //Counts for how long we've been jumping
         yield return new WaitForSeconds(jumpDelay); // wait jumpDelay second 
-        canJump = true;
+        canJumpBottom = true;
+        yield return null;
+    }
+
+    IEnumerator JumpCoroutineLeft() //Jump timer 
+    {
+        //Counts for how long we've been jumping
+        yield return new WaitForSeconds(jumpDelay); // wait jumpDelay second 
+        canJumpLeft = true;
+        yield return null;
+    }
+
+    IEnumerator JumpCoroutineRight() //Jump timer 
+    {
+        //Counts for how long we've been jumping
+        yield return new WaitForSeconds(jumpDelay); // wait jumpDelay second 
+        canJumpRight = true;
         yield return null;
     }
 
@@ -255,7 +268,6 @@ public class Playercontroler : MonoBehaviour
     IEnumerator DashRecoverCoroutine()
     {
         yield return new WaitForFixedUpdate();
-        dashVelocity = Vector2.zero;
         yield return new WaitForSeconds(dashDelay); // wait for dashdelaysecond
         yield return new WaitWhile(() => !contactHanlder.Contacts.Bottom); // wait until contact bottom = true 
         canDash = true;
