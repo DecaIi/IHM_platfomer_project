@@ -51,6 +51,8 @@ public class Playercontroler : MonoBehaviour
 
     Collider2D playerCollider;
     ContactHandler contactHanlder;
+
+    FeedBackControler feedBackControler;
     
     Vector2 currentVelocity;
 
@@ -67,7 +69,7 @@ public class Playercontroler : MonoBehaviour
     {
         playerCollider = GetComponent<Collider2D>();
         contactHanlder = GetComponent<ContactHandler>();
-
+        feedBackControler = GetComponent<FeedBackControler>();
         filter = new ContactFilter2D()
         {
             layerMask = platformLayer,
@@ -193,7 +195,7 @@ public void Jump() // jump if the player is grounder and start a timer for the j
     {
         return;
     }
-
+    //we gona jump 
     canJump = false;
 
     if (contactHanlder.Contacts.Bottom)
@@ -208,6 +210,7 @@ public void Jump() // jump if the player is grounder and start a timer for the j
     {
         currentVelocity += sideJumpAccel;
     }
+    feedBackControler.CameraSharke();
     StartCoroutine(JumpCoroutine());
         
 }
@@ -224,15 +227,15 @@ public void Dash(Vector2 _dir)
 {
     if (!canDash)
         return;
-    //canJump = false;
     currentVelocity = _dir * initialDashAccel;
+    canDash = false;
     StartCoroutine(DashRecoverCoroutine());
 }
 
 IEnumerator DashRecoverCoroutine()
 {
-    new WaitForSecondsRealtime(DashDelay); // fait for dashdelaysecond
-    new WaitWhile(() =>!contactHanlder.Contacts.Bottom); // wait until contact bottom = true 
+    yield return new WaitForSecondsRealtime(DashDelay); // fait for dashdelaysecond
+    yield return new WaitWhile(() =>!contactHanlder.Contacts.Bottom); // wait until contact bottom = true 
     canDash = true;
     //canJump = true;
     yield return null;
