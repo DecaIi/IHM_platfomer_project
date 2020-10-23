@@ -224,7 +224,7 @@ public class Playercontroler : MonoBehaviour
 
     public void Dash(Vector2 _dir)
     {
-        if (!canDash)
+        if (!canDash || _dir.x == 0 && _dir.y == 0)  // if dir x and dir y ar equal to 0 it's not realy a dash 
         {
             //Debug.Log("Cant dash");
             return;
