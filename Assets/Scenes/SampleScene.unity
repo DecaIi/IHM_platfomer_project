@@ -500,7 +500,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1086881423}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.47, y: 0.88, z: 0}
+  m_LocalPosition: {x: 1.33, y: 1.22, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -518,25 +518,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c18a2ff69ca8e87478a4e22a34d0faae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movSpeedMax: 200
-  movAccelMax: 10
-  movDeccelMax: 5
+  movSpeedMax: 4
+  movAccelMax: 400
+  movDeccelMax: 400
   uTurnAccel: 5
-  airMovSpeedMax: 20
-  airMovAccelMax: 5
-  airMovDeccelMax: 10
+  airMovSpeedMax: 3
+  airMovAccelMax: 50
+  airMovDeccelMax: 50
   fallingAccel: 5
   wallClimbMaxSped: 200
   wallClimAccel: 10
   wallfalingReductionAccel: 0
-  initialJumpAccel: 5
+  initialJumpAccel: 15
+  sideJumpAccel: {x: 15, y: 30}
   jumpDelay: 0.5
-  jumpHeight: 3
   initialDashAccel: 30
   DashDelay: 0
   groundCastRadius: 0.33
   groundDistanceDetection: 0
-  gravityAccel: 0.1
+  gravityAccel: 1
   maxFallingSpeed: 3
   platformLayer:
     serializedVersion: 2

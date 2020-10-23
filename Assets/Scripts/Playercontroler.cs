@@ -28,8 +28,9 @@ public class Playercontroler : MonoBehaviour
     [SerializeField] float wallfalingReductionAccel;   //wallfalling reduction acce
     [Header("Jump")]
     [SerializeField] float initialJumpAccel;            //The force applied to the player when starting to jump
+    [SerializeField] Vector2 sideJumpAccel;
     [SerializeField] float jumpDelay;
-    [SerializeField] float jumpHeight;
+
     
     [Header("Dash")]
     [SerializeField] float initialDashAccel;            //The force applied to the player when starting to jump
@@ -72,11 +73,8 @@ public class Playercontroler : MonoBehaviour
             layerMask = platformLayer,
             useTriggers = true
         };
-    }
 
-    void Start()
-    {
-        currentVelocity = new Vector2(0,0);
+        currentVelocity = new Vector2(0, 0);
     }
 
     void FixedUpdate()
@@ -191,13 +189,25 @@ public class Playercontroler : MonoBehaviour
 
 public void Jump() // jump if the player is grounder and start a timer for the jump
 {
-    if (!contactHanlder.Contacts.Bottom || !canJump)
+    if (!canJump)
     {
         return;
     }
-    Debug.Log("Called " + Time.frameCount);
+
     canJump = false;
-    currentVelocity.y += initialJumpAccel ;
+
+    if (contactHanlder.Contacts.Bottom)
+    {
+        currentVelocity += Vector2.up * initialJumpAccel;
+    }
+    else if (contactHanlder.Contacts.Left)
+    {
+        currentVelocity += sideJumpAccel;
+    }
+    else if (contactHanlder.Contacts.Right)
+    {
+        currentVelocity += sideJumpAccel;
+    }
     StartCoroutine(JumpCoroutine());
         
 }
@@ -211,19 +221,21 @@ IEnumerator JumpCoroutine() //Jump timer
 }
 
 public void Dash(Vector2 _dir)
-    {
-        if (!canDash)
-            return;
-        canJump = false;
-        currentVelocity = _dir * initialDashAccel;
-        StartCoroutine(DashRecoverCoroutine());
-    }
+{
+    if (!canDash)
+        return;
+    //canJump = false;
+    currentVelocity = _dir * initialDashAccel;
+    StartCoroutine(DashRecoverCoroutine());
+}
+
 IEnumerator DashRecoverCoroutine()
-    {
-        new WaitForSecondsRealtime(DashDelay); // fait for dashdelaysecond
-        new WaitWhile(() =>!contactHanlder.Contacts.Bottom); // wait until contact bottom = true 
-        canDash = true;
-        yield return null;
-    }
+{
+    new WaitForSecondsRealtime(DashDelay); // fait for dashdelaysecond
+    new WaitWhile(() =>!contactHanlder.Contacts.Bottom); // wait until contact bottom = true 
+    canDash = true;
+    //canJump = true;
+    yield return null;
+}
     
 }
