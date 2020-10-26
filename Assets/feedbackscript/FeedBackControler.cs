@@ -9,12 +9,13 @@ public class FeedBackControler : MonoBehaviour
     [SerializeField] float shakeIntensity;
     [SerializeField] ParticleSystem ParticleSystem;
     Camerashake camerashake;
-    Material material;
+    SpriteRenderer renderer;
     
     private void Start()
     {
         camerashake = playerCamera.GetComponent<Camerashake>();
-        material = GetComponent<Renderer>().material;
+        renderer = GetComponent<SpriteRenderer>();
+
     }
     public void  CameraSharke()
     {
@@ -33,16 +34,16 @@ public class FeedBackControler : MonoBehaviour
     */
    public void ChangeColor(Color color)
     {
-        material.color = color;
+        renderer.color = color;
     }
 
     public void ChangeToRed()
     {
         ChangeColor(Color.red);
     }
-    public void ChangeToBleu()
+    public void ChangeToBlue()
     {
-        ChangeColor(Color.green);
+        ChangeColor(Color.blue);
     }
     /** Smouthly change color from start to end with gthe given speed 
      *  param/ Color startColor the color the object start
@@ -52,10 +53,10 @@ public class FeedBackControler : MonoBehaviour
     private IEnumerator SmouthChangeColor(Color startColor , Color  endColor, float speed )
     {
         float tick = 0f;
-        while (material.color != endColor)
+        while (renderer.color != endColor)
         {
             tick += Time.deltaTime * speed;
-            material.color = Color.Lerp(startColor, endColor, tick);
+            renderer.color = Color.Lerp(startColor, endColor, tick);
             yield return null;
         }
     }

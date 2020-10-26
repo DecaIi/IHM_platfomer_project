@@ -250,8 +250,7 @@ public class Playercontroler : MonoBehaviour
     {
         feedBackControler.CameraSharke();
         feedBackControler.InstanciateDashPrefabOnPosition(transform.position + new Vector3(0, transform.localScale.y, 0) / 2);
-        feedBackControler.ChangeToBleu();
-
+        feedBackControler.ChangeToBlue();
     }
 
 
