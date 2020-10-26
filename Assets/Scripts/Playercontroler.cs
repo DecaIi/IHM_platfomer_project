@@ -237,9 +237,10 @@ public class Playercontroler : MonoBehaviour
             canDash = false;
             currentVelocity += _dir * initialDashAccel;
             StartCoroutine(Unlimitedspeed());
-            StartCoroutine(DashRecoverCoroutine());
             dashFeedback();
-            StartCoroutine(JumpCoroutine());
+            StartCoroutine(DashRecoverCoroutine());
+            
+           // StartCoroutine(JumpCoroutine());
         }
     }
     /** Function to call to generat feedback for the dash 
@@ -249,6 +250,8 @@ public class Playercontroler : MonoBehaviour
     {
         feedBackControler.CameraSharke();
         feedBackControler.InstanciateDashPrefabOnPosition(transform.position + new Vector3(0, transform.localScale.y, 0) / 2);
+        feedBackControler.ChangeToBleu();
+
     }
 
 
@@ -264,13 +267,12 @@ public class Playercontroler : MonoBehaviour
         airMovSpeedMax -= initialDashAccel;
     }
 
-
-
     IEnumerator DashRecoverCoroutine()
     {
         yield return new WaitForSecondsRealtime(dashDelay); // fait for dashdelaysecond
         yield return new WaitWhile(() =>!contactHanlder.Contacts.Bottom); // wait until contact bottom = true 
         canDash = true;
+        feedBackControler.ChangeToRed();
         //canJump = true;
         yield return null;
     }
