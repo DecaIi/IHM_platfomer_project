@@ -12,7 +12,7 @@ public class FeedBackControler : MonoBehaviour
     [SerializeField] ParticleSystem ParticleSystem;
     Camerashake camerashake;
     SpriteRenderer renderer;
-    
+  
     private void Start()
     {
         camerashake = playerCamera.GetComponent<Camerashake>();
@@ -51,7 +51,6 @@ public class FeedBackControler : MonoBehaviour
         if (canchangecolor)
         {
             StartCoroutine(ClignoteEnumerator(color1, color2, time));
-
         }
     }
     public void Clignote(Color color1, Color color2)
@@ -72,6 +71,7 @@ public class FeedBackControler : MonoBehaviour
             yield return null;
         }
         canchangecolor = true;
+        ChangeToRed();
         yield return null;
     }
 
