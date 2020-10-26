@@ -162,7 +162,10 @@ public class Playercontroler : MonoBehaviour
         }
         else
         {
-            RecoverEnergie();
+            if (contactHanlder.Contacts.Bottom)     // only recover energi if grounded 
+            {
+                RecoverEnergie();
+            }
         }
     }
 
