@@ -5,6 +5,8 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using TMPro;
 using Unity.Collections;
+using UnityEditor.Experimental.AssetImporters;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Timeline;
 
@@ -22,16 +24,18 @@ public class Playercontroler : MonoBehaviour
     [SerializeField] float airMovAccelMax;             //The maximum change in velocity the player can do in the air. This determines how responsive the character will be in the air.
     [SerializeField] float airMovDeccelMax;            //the maximum change in velocity grounded when player is "free" ( no imput command)
     [SerializeField] float fallingAccel;               //the acceleration when push down 
-    [Header("Wall")]
-    [SerializeField] float wallClimbMaxSped;           //wallmaxspeedwhen on a wall
-    [SerializeField] float wallClimAccel;              //wallmaxaccel on a wall
-    [SerializeField] float wallfalingReductionAccel;   //wallfalling reduction acce
+    [Header("Wall")] 
+    [SerializeField] float wallGrabFallingAccel;              //wallmaxaccel on a wall
+   
     [Header("Jump")]
     [SerializeField] float initialJumpAccel;            //The force applied to the player when starting to jump
     [SerializeField] Vector2 sideJumpAccel;
     [SerializeField] float jumpDelay;
 
-    
+    [Header("Energie")]
+    [SerializeField] float maximuEnergie;               //the maximumenergie for wall grab
+    [SerializeField] float energieDecresePerTime;       //the energiedecrease when a wall is grab
+    [SerializeField] float energieRecoverPerTime;       
     [Header("Dash")]
     [SerializeField] float initialDashAccel;            //The force applied to the player when starting to jump
     [SerializeField] float dashDelay;
@@ -52,7 +56,8 @@ public class Playercontroler : MonoBehaviour
     Collider2D playerCollider;
     ContactHandler contactHanlder;
 
-    bool isGrabing;
+       
+    float currentEnergie;
 
     Vector2 currentVelocity;
 
@@ -66,6 +71,7 @@ public class Playercontroler : MonoBehaviour
     bool canJumpLeft = true;
     bool canJumpRight = true;
     bool canDash = true;
+    bool isGrabing;
 
     void Awake()
     {
@@ -114,24 +120,49 @@ public class Playercontroler : MonoBehaviour
             
         }
     }
+    /** Function to call when we chant the player to grab wall 
+     */
     public void StartGrab()
     {
         isGrabing = true;
     }
+    /** Function to call when we want the player stop grabing the wall 
+     */
     public void EndGrab()
     {
         isGrabing = false;
+    }
+
+    public void RecoverEnergie()
+    {
+        float energieIncreced = currentEnergie + energieRecoverPerTime * Time.deltaTime;
+        currentEnergie = energieIncreced < maximuEnergie ? energieIncreced : maximuEnergie;
+    }
+    public void DecreceEnergie()
+    {
+        float energieDecreced = currentEnergie - energieDecresePerTime * Time.deltaTime;
+        currentEnergie = energieDecreced > 0 ? energieDecreced : 0;
     }
 
     /** Handel the grab complicated by the fact that gravity comme from this update when grab comme frome imputcontroler update 
      */ 
     public void HandelGrab()
     {
-        if (isGrabing && (contactHanlder.Contacts.Left || contactHanlder.Contacts.Right) && !contactHanlder.Contacts.Bottom) //wall grab 
+     
+        if (isGrabing &&        // want to grab
+            currentEnergie > energieDecresePerTime * Time.deltaTime   && // had enouth energie 
+            (contactHanlder.Contacts.Left || contactHanlder.Contacts.Right) && //is close to a wall
+            !contactHanlder.Contacts.Bottom                                    // is't close to ground 
+            ) //wall grab 
         {
+            DecreceEnergie();
             currentVelocity.y = 0;
-            ComputeVelocity(new Vector2(0, wallClimAccel), new Vector2(0, wallClimAccel), new Vector2(0, 1)); // must got up on y  //should compensate gravity
-            return;
+            ComputeVelocity(new Vector2(0, wallGrabFallingAccel), new Vector2(0, wallGrabFallingAccel), new Vector2(0, 1)); // must got up on y  //should compensate gravity
+            
+        }
+        else
+        {
+            RecoverEnergie();
         }
     }
 
