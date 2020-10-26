@@ -5,6 +5,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using TMPro;
 using Unity.Collections;
+using UnityEditor.Build;
 using UnityEngine;
 using UnityEngine.Timeline;
 
@@ -213,8 +214,10 @@ public class Playercontroler : MonoBehaviour
             currentVelocity += sideJumpAccel;
         }
         StartCoroutine(JumpCoroutine());
-        
+        feedBackControler.Clignote(Color.green, Color.blue, 1);
     }
+
+
 
     IEnumerator JumpCoroutine() //Jump timer 
     {
@@ -252,6 +255,7 @@ public class Playercontroler : MonoBehaviour
         feedBackControler.InstanciateDashPrefabOnPosition(transform.position + new Vector3(0, transform.localScale.y, 0) / 2);
         feedBackControler.ChangeToBlue();
     }
+
 
 
     /**

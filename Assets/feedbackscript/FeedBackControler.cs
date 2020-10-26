@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 
 public class FeedBackControler : MonoBehaviour
@@ -15,7 +17,10 @@ public class FeedBackControler : MonoBehaviour
     {
         camerashake = playerCamera.GetComponent<Camerashake>();
         renderer = GetComponent<SpriteRenderer>();
-
+    }
+    private void Update()
+    {
+        
     }
     public void  CameraSharke()
     {
@@ -34,7 +39,40 @@ public class FeedBackControler : MonoBehaviour
     */
    public void ChangeColor(Color color)
     {
-        renderer.color = color;
+        if (canchangecolor)
+        {
+            renderer.color = color;
+        }
+    }
+
+    bool canchangecolor = true;
+    public void Clignote(Color color1, Color color2, float time)
+    {
+        if (canchangecolor)
+        {
+            StartCoroutine(ClignoteEnumerator(color1, color2, time));
+
+        }
+    }
+    public void Clignote(Color color1, Color color2)
+    {
+        if (canchangecolor)
+        {
+            renderer.color = Color.Lerp(color1, color2, Mathf.PingPong(Time.time * 8, 1));
+        }
+    }
+    IEnumerator ClignoteEnumerator(Color color1, Color color2, float time)
+    {
+        canchangecolor = false;
+        float curentime = 0f;
+        while (curentime < time)
+        {
+            curentime += Time.deltaTime;
+            renderer.color = Color.Lerp(color1, color2, Mathf.PingPong(Time.time* 8 , 1));
+            yield return null;
+        }
+        canchangecolor = true;
+        yield return null;
     }
 
     public void ChangeToRed()
@@ -45,19 +83,5 @@ public class FeedBackControler : MonoBehaviour
     {
         ChangeColor(Color.blue);
     }
-    /** Smouthly change color from start to end with gthe given speed 
-     *  param/ Color startColor the color the object start
-     *  param/ Color endColor   the color the object will end
-     *  param/ float speed      the speed the color must change
-     */
-    private IEnumerator SmouthChangeColor(Color startColor , Color  endColor, float speed )
-    {
-        float tick = 0f;
-        while (renderer.color != endColor)
-        {
-            tick += Time.deltaTime * speed;
-            renderer.color = Color.Lerp(startColor, endColor, tick);
-            yield return null;
-        }
-    }
+ 
 }
