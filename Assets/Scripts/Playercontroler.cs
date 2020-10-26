@@ -51,7 +51,9 @@ public class Playercontroler : MonoBehaviour
 
     Collider2D playerCollider;
     ContactHandler contactHanlder;
-    
+
+    bool isGrabing;
+
     Vector2 currentVelocity;
 
     public Vector2 Velocity
@@ -75,13 +77,14 @@ public class Playercontroler : MonoBehaviour
             layerMask = platformLayer,
             useTriggers = true
         };
-
+        isGrabing = false;
         currentVelocity = new Vector2(0, 0);
     }
 
     void FixedUpdate()
     {
         ComputeGravity();
+        HandelGrab();
         HandleCollisions();
         ApplyVelocity();
     }
@@ -106,18 +109,32 @@ public class Playercontroler : MonoBehaviour
             { //can fall aster only is press y down side and on the air 
                 ComputeVelocity(new Vector2(maxSpeed, float.PositiveInfinity), new Vector2(maxAccel, fallingAccel), _dir);
                 return;
-            }
-            if ((contactHanlder.Contacts.Left || contactHanlder.Contacts.Right) && _dir.y > 0) //wall climb
-            {
-                ComputeVelocity(new Vector2(maxSpeed, wallClimbMaxSped), new Vector2(maxAccel, wallClimAccel), _dir);
-                return;
-            }
-                    
+            }       
             ComputeVelocity(new Vector2(maxSpeed,0), new Vector2(maxAccel,0), new Vector2(_dir.x , 0 ));  //only x movment
             
         }
     }
-    
+    public void StartGrab()
+    {
+        isGrabing = true;
+    }
+    public void EndGrab()
+    {
+        isGrabing = false;
+    }
+
+    /** Handel the grab complicated by the fact that gravity comme from this update when grab comme frome imputcontroler update 
+     */ 
+    public void HandelGrab()
+    {
+        if (isGrabing && (contactHanlder.Contacts.Left || contactHanlder.Contacts.Right) && !contactHanlder.Contacts.Bottom) //wall grab 
+        {
+            currentVelocity.y = 0;
+            ComputeVelocity(new Vector2(0, wallClimAccel), new Vector2(0, wallClimAccel), new Vector2(0, 1)); // must got up on y  //should compensate gravity
+            return;
+        }
+    }
+
     /**
      * Computes the horizontal velocity of the character.
      * \param targetVelocity    The absolute velocity the character has to reach.
@@ -168,7 +185,7 @@ public class Playercontroler : MonoBehaviour
      */
     void ComputeGravity()
     {
-        currentVelocity += Vector2.down * gravityAccel;
+        currentVelocity += Vector2.down * gravityAccel * Time.deltaTime;
     }
 
     /**

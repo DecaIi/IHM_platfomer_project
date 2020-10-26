@@ -35,15 +35,23 @@ public class ImputControler : MonoBehaviour
         {
             playerControler.Dash(output);
         }
-        if (Input.GetButton("X"))
-        {
-            //nothing yet 
-        }
         if (Input.GetButton("Y"))
         {
             //nothing yet 
         }
-        playerControler.Move(output);
+        if (Input.GetButtonUp("X") )        //when the buton is realeased stop grab 
+        {
+            playerControler.EndGrab();
+        }
+        if (Input.GetButtonDown("X") )  //when the buton is presed start to grab 
+        {
+            playerControler.StartGrab();
+        }
+        else                        // no movment alowed if dash
+        {
+            playerControler.Move(output);
+        }
+        
     }
 
 }
