@@ -10,8 +10,10 @@ public class FeedBackControler : MonoBehaviour
     [SerializeField] float shakeDuration;
     [SerializeField] float shakeIntensity;
     [SerializeField] ParticleSystem ParticleSystem;
+    
     Camerashake camerashake;
     SpriteRenderer renderer;
+    
   
     private void Start()
     {

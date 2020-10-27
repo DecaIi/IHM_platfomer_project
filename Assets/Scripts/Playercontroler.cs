@@ -343,7 +343,6 @@ public class Playercontroler : MonoBehaviour
 
     IEnumerator DashRecoverCoroutine()
     {
-        yield return new WaitForFixedUpdate();
         yield return new WaitForSeconds(dashDelay); // wait for dashdelaysecond
         yield return new WaitWhile(() => !contactHanlder.Contacts.Bottom); // wait until contact bottom = true 
         canDash = true;
