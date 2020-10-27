@@ -7,6 +7,7 @@ using UnityEngine;
 public class FeedBackControler : MonoBehaviour
 {
     [SerializeField] Camera playerCamera;
+    [SerializeField] TrailRenderer trailRenderer;
     [SerializeField] float shakeDuration;
     [SerializeField] float shakeIntensity;
     [SerializeField] ParticleSystem ParticleSystem;
@@ -17,12 +18,14 @@ public class FeedBackControler : MonoBehaviour
 
     Camerashake camerashake;
     SpriteRenderer renderer;
+   
     
     private void Start()
     {
         camerashake = playerCamera.GetComponent<Camerashake>();
         renderer = GetComponent<SpriteRenderer>();
         audioSource = GetComponent<AudioSource>();
+        trailRenderer.enabled = false;
     }
     private void Update()
     {
@@ -45,6 +48,19 @@ public class FeedBackControler : MonoBehaviour
     {
         audioSource.PlayOneShot(dashAudioClip);
     }
+
+    public void ActivateTrail(float time )
+    {
+        StartCoroutine(activateTrail(time));
+    }
+    IEnumerator activateTrail( float t)
+    {
+        trailRenderer.enabled = true;
+        yield return new WaitForSeconds(t);
+        trailRenderer.enabled = false;
+        yield return null;
+    }
+
 
     public void InstanciateDashPrefabOnPosition(Vector3 position)
     {

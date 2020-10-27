@@ -324,6 +324,7 @@ public class Playercontroler : MonoBehaviour
     void dashFeedback()
     {
         feedBackControler.PlayDashSound();
+        feedBackControler.ActivateTrail(1);
         feedBackControler.CameraSharke();
         feedBackControler.InstanciateDashPrefabOnPosition(transform.position + new Vector3(0, transform.localScale.y, 0) / 2);
         feedBackControler.ChangeToBlue();
