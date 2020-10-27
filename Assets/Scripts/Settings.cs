@@ -19,6 +19,14 @@ public class Settings : MonoBehaviour
         wallGrabRecoverToogle.isOn = FeedBackControler.WallGrabRecoverEnabled;
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetButtonDown("UINavCancel") || Input.GetKeyDown(KeyCode.Escape))
+        {
+            BackToMenu();
+        }
+    }
+
     public void SetCameraShake()
     {
         FeedBackControler.CameraShakeEnabled = cameraShakeToogle.isOn;
