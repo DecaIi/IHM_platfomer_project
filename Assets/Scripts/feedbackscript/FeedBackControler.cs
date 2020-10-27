@@ -10,7 +10,11 @@ public class FeedBackControler : MonoBehaviour
     [SerializeField] float shakeDuration;
     [SerializeField] float shakeIntensity;
     [SerializeField] ParticleSystem ParticleSystem;
-    
+
+    public AudioSource audioSource;
+    public AudioClip jumpAudioClip;
+    public AudioClip dashAudioClip;
+
     Camerashake camerashake;
     SpriteRenderer renderer;
     
@@ -18,6 +22,7 @@ public class FeedBackControler : MonoBehaviour
     {
         camerashake = playerCamera.GetComponent<Camerashake>();
         renderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
     }
     private void Update()
     {
@@ -32,6 +37,15 @@ public class FeedBackControler : MonoBehaviour
     /** instanciate the particule system on the given position
      *  param/ float position   position were we want the particul system to be instanciate  
      */
+    public void PlayJumpSound()
+    {
+        audioSource.PlayOneShot(jumpAudioClip);
+    }
+    public void PlayDashSound()
+    {
+        audioSource.PlayOneShot(dashAudioClip);
+    }
+
     public void InstanciateDashPrefabOnPosition(Vector3 position)
     {
        if( true ) { 

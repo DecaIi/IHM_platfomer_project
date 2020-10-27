@@ -259,6 +259,7 @@ public class Playercontroler : MonoBehaviour
             canJumpBottom = false;
             currentVelocity += Vector2.up * initialJumpAccel;
             StartCoroutine(JumpCoroutineBottom());
+            feedBackControler.PlayJumpSound();
         }
         else if (contactHanlder.Contacts.Left && canJumpLeft)
         {
@@ -322,6 +323,7 @@ public class Playercontroler : MonoBehaviour
      */
     void dashFeedback()
     {
+        feedBackControler.PlayDashSound();
         feedBackControler.CameraSharke();
         feedBackControler.InstanciateDashPrefabOnPosition(transform.position + new Vector3(0, transform.localScale.y, 0) / 2);
         feedBackControler.ChangeToBlue();
