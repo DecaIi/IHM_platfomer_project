@@ -27,7 +27,7 @@ public class ImputControler : MonoBehaviour
         padVertical = Input.GetAxis("CrossVertical");
         output  = new Vector2(Mathf.Clamp(leftHorizontal + padHorizontal, -1, 1) , Mathf.Clamp(leftVertical + padVertical, -1, 1) );
       
-        if (Input.GetButton("A")) //jum^p
+        if (Input.GetButtonDown("A")) //jum^p
         {
             playerControler.Jump();
         }
@@ -35,15 +35,23 @@ public class ImputControler : MonoBehaviour
         {
             playerControler.Dash(output);
         }
-        if (Input.GetButton("X"))
-        {
-            //nothing yet 
-        }
         if (Input.GetButton("Y"))
         {
             //nothing yet 
         }
-        playerControler.Move(output);
+        if (Input.GetButtonUp("X") )        //when the buton is realeased stop grab 
+        {
+            playerControler.EndGrab();
+        }
+        if (Input.GetButtonDown("X") )  //when the buton is presed start to grab 
+        {
+            playerControler.StartGrab();
+        }
+        else                        // no movment alowed if dash
+        {
+            playerControler.Move(output);
+        }
+        
     }
 
 }

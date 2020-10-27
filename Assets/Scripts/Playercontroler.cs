@@ -5,7 +5,8 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using TMPro;
 using Unity.Collections;
-using UnityEditor.Build;
+using UnityEditor.Experimental.AssetImporters;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Timeline;
 
@@ -23,16 +24,18 @@ public class Playercontroler : MonoBehaviour
     [SerializeField] float airMovAccelMax;             //The maximum change in velocity the player can do in the air. This determines how responsive the character will be in the air.
     [SerializeField] float airMovDeccelMax;            //the maximum change in velocity grounded when player is "free" ( no imput command)
     [SerializeField] float fallingAccel;               //the acceleration when push down 
-    [Header("Wall")]
-    [SerializeField] float wallClimbMaxSped;           //wallmaxspeedwhen on a wall
-    [SerializeField] float wallClimAccel;              //wallmaxaccel on a wall
-    [SerializeField] float wallfalingReductionAccel;   //wallfalling reduction acce
+    [Header("Wall")] 
+    [SerializeField] float wallGrabFallingAccel;              //wallmaxaccel on a wall
+   
     [Header("Jump")]
     [SerializeField] float initialJumpAccel;            //The force applied to the player when starting to jump
     [SerializeField] Vector2 sideJumpAccel;
     [SerializeField] float jumpDelay;
 
-    
+    [Header("Energie")]
+    [SerializeField] float maximuEnergie;               //the maximumenergie for wall grab
+    [SerializeField] float energieDecresePerTime;       //the energiedecrease when a wall is grab
+    [SerializeField] float energieRecoverPerTime;       
     [Header("Dash")]
     [SerializeField] float initialDashAccel;            //The force applied to the player when starting to jump
     [SerializeField] float dashDelay;
@@ -55,8 +58,10 @@ public class Playercontroler : MonoBehaviour
 
     FeedBackControler feedBackControler;
     
+       
+    float currentEnergie;
+
     Vector2 currentVelocity;
-    Vector2 dashVelocity;
 
     public Vector2 Velocity
     {
@@ -64,8 +69,11 @@ public class Playercontroler : MonoBehaviour
         private set { currentVelocity = value; }
     }
 
-    bool canJump = true;
+    bool canJumpBottom = true;
+    bool canJumpLeft = true;
+    bool canJumpRight = true;
     bool canDash = true;
+    bool isGrabing;
 
     
     void Awake()
@@ -78,14 +86,14 @@ public class Playercontroler : MonoBehaviour
             layerMask = platformLayer,
             useTriggers = true
         };
-
+        isGrabing = false;
         currentVelocity = new Vector2(0, 0);
-        dashVelocity = new Vector2(0, 0);
     }
 
     void FixedUpdate()
     {
         ComputeGravity();
+        HandelGrab();
         HandleCollisions();
         ApplyVelocity();
     }
@@ -110,18 +118,60 @@ public class Playercontroler : MonoBehaviour
             { //can fall aster only is press y down side and on the air 
                 ComputeVelocity(new Vector2(maxSpeed, float.PositiveInfinity), new Vector2(maxAccel, fallingAccel), _dir);
                 return;
-            }
-            if ((contactHanlder.Contacts.Left || contactHanlder.Contacts.Right) && _dir.y > 0) //wall climb
-            {
-                ComputeVelocity(new Vector2(maxSpeed, wallClimbMaxSped), new Vector2(maxAccel, wallClimAccel), _dir);
-                return;
-            }
-                    
+            }       
             ComputeVelocity(new Vector2(maxSpeed,0), new Vector2(maxAccel,0), new Vector2(_dir.x , 0 ));  //only x movment
             
         }
     }
-    
+    /** Function to call when we chant the player to grab wall 
+     */
+    public void StartGrab()
+    {
+        isGrabing = true;
+    }
+    /** Function to call when we want the player stop grabing the wall 
+     */
+    public void EndGrab()
+    {
+        isGrabing = false;
+    }
+
+    public void RecoverEnergie()
+    {
+        float energieIncreced = currentEnergie + energieRecoverPerTime * Time.deltaTime;
+        currentEnergie = energieIncreced < maximuEnergie ? energieIncreced : maximuEnergie;
+    }
+    public void DecreceEnergie()
+    {
+        float energieDecreced = currentEnergie - energieDecresePerTime * Time.deltaTime;
+        currentEnergie = energieDecreced > 0 ? energieDecreced : 0;
+    }
+
+    /** Handel the grab complicated by the fact that gravity comme from this update when grab comme frome imputcontroler update 
+     */ 
+    public void HandelGrab()
+    {
+        if (isGrabing &&        // want to grab
+            currentEnergie > energieDecresePerTime * Time.deltaTime   && // had enouth energie 
+            (contactHanlder.Contacts.Left || contactHanlder.Contacts.Right) && //is close to a wall
+            !contactHanlder.Contacts.Bottom                                    // is't close to ground 
+            ) //wall grab 
+        {
+            Debug.Log("Eneegie decrease :" + currentEnergie);
+            DecreceEnergie();
+            currentVelocity.y = 0;
+            ComputeVelocity(new Vector2(0, wallGrabFallingAccel), new Vector2(0, wallGrabFallingAccel), new Vector2(0, 1)); //the player can slide along the wall           
+        }
+        else
+        {
+            if (contactHanlder.Contacts.Bottom)     // only recover energi if grounded 
+            {
+                Debug.Log("Eneegie Recover:  " + currentEnergie);
+                RecoverEnergie();
+            }
+        }
+    }
+
     /**
      * Computes the horizontal velocity of the character.
      * \param targetVelocity    The absolute velocity the character has to reach.
@@ -172,7 +222,7 @@ public class Playercontroler : MonoBehaviour
      */
     void ComputeGravity()
     {
-        currentVelocity += Vector2.down * gravityAccel;
+        currentVelocity += Vector2.down * gravityAccel * Time.deltaTime;
     }
 
     /**
@@ -194,36 +244,48 @@ public class Playercontroler : MonoBehaviour
     }
 
     public void Jump() // jump if the player is grounder and start a timer for the jump
-    {
-        if (!canJump)
+    {     
+        if (contactHanlder.Contacts.Bottom && canJumpBottom)
         {
-            return;
-        }
-        canJump = false;
-
-        if (contactHanlder.Contacts.Bottom)
-        {
+            canJumpBottom = false;
             currentVelocity += Vector2.up * initialJumpAccel;
+            StartCoroutine(JumpCoroutineBottom());
         }
-        else if (contactHanlder.Contacts.Left)
+        else if (contactHanlder.Contacts.Left && canJumpLeft)
         {
+            canJumpLeft = false;
             currentVelocity += sideJumpAccel;
+            StartCoroutine(JumpCoroutineLeft());
         }
-        else if (contactHanlder.Contacts.Right)
+        else if(contactHanlder.Contacts.Right && canJumpRight)
         {
-            currentVelocity += sideJumpAccel;
-        }
-        StartCoroutine(JumpCoroutine());
-        feedBackControler.Clignote(Color.green, Color.blue, 1);
+            canJumpRight = false;
+            currentVelocity += new Vector2(-sideJumpAccel.x, sideJumpAccel.y);
+            StartCoroutine(JumpCoroutineRight());
+        } 
     }
 
-
-
-    IEnumerator JumpCoroutine() //Jump timer 
+    IEnumerator JumpCoroutineBottom() //Jump timer 
     {
         //Counts for how long we've been jumping
         yield return new WaitForSeconds(jumpDelay); // wait jumpDelay second 
-        canJump = true;
+        canJumpBottom = true;
+        yield return null;
+    }
+
+    IEnumerator JumpCoroutineLeft() //Jump timer 
+    {
+        //Counts for how long we've been jumping
+        yield return new WaitForSeconds(jumpDelay); // wait jumpDelay second 
+        canJumpLeft = true;
+        yield return null;
+    }
+
+    IEnumerator JumpCoroutineRight() //Jump timer 
+    {
+        //Counts for how long we've been jumping
+        yield return new WaitForSeconds(jumpDelay); // wait jumpDelay second 
+        canJumpRight = true;
         yield return null;
     }
 
@@ -272,8 +334,9 @@ public class Playercontroler : MonoBehaviour
 
     IEnumerator DashRecoverCoroutine()
     {
-        yield return new WaitForSecondsRealtime(dashDelay); // fait for dashdelaysecond
-        yield return new WaitWhile(() =>!contactHanlder.Contacts.Bottom); // wait until contact bottom = true 
+        yield return new WaitForFixedUpdate();
+        yield return new WaitForSeconds(dashDelay); // wait for dashdelaysecond
+        yield return new WaitWhile(() => !contactHanlder.Contacts.Bottom); // wait until contact bottom = true 
         canDash = true;
         feedBackControler.ChangeToRed();
         //canJump = true;
