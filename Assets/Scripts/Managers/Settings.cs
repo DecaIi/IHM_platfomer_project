@@ -11,6 +11,8 @@ public class Settings : MonoBehaviour
     [SerializeField] Toggle dashRecoverToogle;
     [SerializeField] Toggle wallGrabRecoverToogle;
 
+    public static bool InGameSettings { get; set; } = false;
+
     private void Awake()
     {
         cameraShakeToogle.isOn = FeedBackControler.CameraShakeEnabled;
@@ -21,9 +23,9 @@ public class Settings : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetButtonDown("UINavCancel") || Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetButtonDown("UINavCancel"))
         {
-            BackToMenu();
+            OK();
         }
     }
 
@@ -47,8 +49,15 @@ public class Settings : MonoBehaviour
         FeedBackControler.WallGrabRecoverEnabled = wallGrabRecoverToogle.isOn;
     }
 
-    public void BackToMenu()
+    public void OK()
     {
-        SceneManager.LoadScene("Menu", LoadSceneMode.Single);
+        if (InGameSettings)
+        {
+            GameManager.Instance.Pause();
+        }
+        else
+        {
+            GameManager.Instance.LoadMenu();
+        }   
     }
 }
