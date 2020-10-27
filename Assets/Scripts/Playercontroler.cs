@@ -88,6 +88,7 @@ public class Playercontroler : MonoBehaviour
         };
         isGrabing = false;
         currentVelocity = new Vector2(0, 0);
+        currentEnergie = maximuEnergie;
     }
 
     void FixedUpdate()
@@ -170,6 +171,14 @@ public class Playercontroler : MonoBehaviour
                 RecoverEnergie();
             }
         }
+        if(currentEnergie < maximuEnergie / 3)
+        {
+            lowEnergiFeedback();
+        }
+    }
+    private void lowEnergiFeedback()
+    {
+        feedBackControler.Clignote(Color.red, Color.green, 1);
     }
 
     /**
