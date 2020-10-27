@@ -289,7 +289,7 @@ GameObject:
   - component: {fileID: 404699034}
   - component: {fileID: 404699035}
   m_Layer: 5
-  m_Name: CameraShake
+  m_Name: CameraShakeToogle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -364,7 +364,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1047039061}
         m_MethodName: SetCameraShake
-        m_Mode: 6
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -932,6 +932,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59741fc09922c8c4caf758f0803c43fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraShakeToogle: {fileID: 404699035}
+  dashParticulesToogle: {fileID: 1954002244}
+  dashRecoverToogle: {fileID: 2033467694}
+  wallGrabRecoverToogle: {fileID: 1238698781}
 --- !u!1 &1238698779
 GameObject:
   m_ObjectHideFlags: 0
@@ -943,7 +947,7 @@ GameObject:
   - component: {fileID: 1238698780}
   - component: {fileID: 1238698781}
   m_Layer: 5
-  m_Name: WallGrabRecover
+  m_Name: WallGrabRecoverToogle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1018,7 +1022,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1047039061}
         m_MethodName: SetWallGrabRecover
-        m_Mode: 6
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1585,7 +1589,7 @@ GameObject:
   - component: {fileID: 1954002243}
   - component: {fileID: 1954002244}
   m_Layer: 5
-  m_Name: DashParticles
+  m_Name: DashParticlesToogle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1660,7 +1664,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1047039061}
         m_MethodName: SetDashParticles
-        m_Mode: 6
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1759,7 +1763,7 @@ GameObject:
   - component: {fileID: 2033467693}
   - component: {fileID: 2033467694}
   m_Layer: 5
-  m_Name: DashRecover
+  m_Name: DashRecoverToogle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1834,7 +1838,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1047039061}
         m_MethodName: SetDashRecover
-        m_Mode: 6
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

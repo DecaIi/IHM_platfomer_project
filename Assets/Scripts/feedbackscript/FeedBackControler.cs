@@ -10,7 +10,13 @@ public class FeedBackControler : MonoBehaviour
     [SerializeField] float shakeDuration;
     [SerializeField] float shakeIntensity;
     [SerializeField] ParticleSystem ParticleSystem;
-    
+
+    public static bool CameraShakeEnabled { get; set; } = true;
+    public static bool DashParticulesEnabled { get; set; } = true;
+    public static bool DashRecoverEnabled { get; set; } = true;
+    public static bool WallGrabRecoverEnabled { get; set; } = true;
+
+
     Camerashake camerashake;
     SpriteRenderer renderer;
     
@@ -25,7 +31,7 @@ public class FeedBackControler : MonoBehaviour
     }
     public void  CameraSharke()
     {
-        if(true) { 
+        if (CameraShakeEnabled) { 
             camerashake.Shake(shakeDuration,shakeIntensity);
         }
     }
@@ -34,7 +40,7 @@ public class FeedBackControler : MonoBehaviour
      */
     public void InstanciateDashPrefabOnPosition(Vector3 position)
     {
-       if( true ) { 
+       if (DashParticulesEnabled) { 
             ParticleSystem particleSystem = Instantiate(ParticleSystem,position,Quaternion.identity);
             Destroy(particleSystem, particleSystem.main.duration); //destroy the particul system after his lif time 
         }
@@ -44,7 +50,7 @@ public class FeedBackControler : MonoBehaviour
     */
    public void ChangeColor(Color color)
     {
-        if (true)
+        if (DashRecoverEnabled)
         {
             if (canchangecolor)
             {
@@ -56,7 +62,7 @@ public class FeedBackControler : MonoBehaviour
     bool canchangecolor = true;
     public void Clignote(Color color1, Color color2, float time)
     {
-        if (true)
+        if (WallGrabRecoverEnabled)
         {
             if (canchangecolor)
             {
@@ -66,7 +72,7 @@ public class FeedBackControler : MonoBehaviour
     }
     public void Clignote(Color color1, Color color2)
     {
-        if (true)
+        if (WallGrabRecoverEnabled)
         {
             if (canchangecolor)
             {
