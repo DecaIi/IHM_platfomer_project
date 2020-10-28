@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 public class ImputControler : MonoBehaviour
 {
@@ -26,7 +26,7 @@ public class ImputControler : MonoBehaviour
         padHorizontal = Input.GetAxis("CrossHorizontal");
         padVertical = Input.GetAxis("CrossVertical");
         output  = new Vector2(Mathf.Clamp(leftHorizontal + padHorizontal, -1, 1) , Mathf.Clamp(leftVertical + padVertical, -1, 1) );
-      
+        
         if (Input.GetButtonDown("A")) //jum^p
         {
             playerControler.Jump();

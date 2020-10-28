@@ -193,12 +193,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 0}
+  trailRenderer: {fileID: 0}
   shakeDuration: 0.2
   shakeIntensity: 0.3
   ParticleSystem: {fileID: 1759586023223018557, guid: d6c787b2e48331b40b7c058a7a1a1e1a,
     type: 3}
   audioSource: {fileID: 5118582668523046811}
-  jumpAudioClip: {fileID: 8300000, guid: 1636a39b988647d4f992788078fe3202, type: 3}
+  jumpAudioClip: {fileID: 8300000, guid: 05b26236ffaea264ea20d9440acfd922, type: 3}
   dashAudioClip: {fileID: 8300000, guid: b1ac00803363e214bb664f0c400aee54, type: 3}
 --- !u!82 &5118582668523046811
 AudioSource:

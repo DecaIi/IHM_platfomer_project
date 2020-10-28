@@ -7,16 +7,17 @@ public class Menu : MonoBehaviour
 {
     public void Play()
     {
-        SceneManager.LoadScene("SampleScene", LoadSceneMode.Single);
+        GameManager.Instance.LoadGame();
     }
 
-    public void Settings()
+    public void LoadSettings()
     {
-        SceneManager.LoadScene("Settings", LoadSceneMode.Single);
+        Settings.InGameSettings = false;
+        GameManager.Instance.LoadSettings();
     }
 
     public void Quit()
     {
-        Application.Quit();
+        GameManager.Instance.Quit();
     }
 }
