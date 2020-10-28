@@ -170,7 +170,6 @@ public class Playercontroler : MonoBehaviour
             else
             {
                 currentVelocity.y += gravityAccel * Time.deltaTime; //compensate gravity
-
             }
             //ComputeVelocity(new Vector2(0, wallGrabFallingAccel), new Vector2(0, -wallGrabFallingAccel), new Vector2(0, -1)); //the player can slide along the wall           
         }
@@ -180,6 +179,10 @@ public class Playercontroler : MonoBehaviour
             {
                 //Debug.Log("Eneegie Recover:  " + currentEnergie);
                 RecoverEnergie();
+            }
+            if (!(contactHanlder.Contacts.Left || contactHanlder.Contacts.Right)) //betwin 2 wall and holding grab
+            {
+                startGrabing = true;
             }
         }
         if(currentEnergie < maximuEnergie / 3)
