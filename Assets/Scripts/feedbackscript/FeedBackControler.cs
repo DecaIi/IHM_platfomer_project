@@ -24,8 +24,8 @@ public class FeedBackControler : MonoBehaviour
     
     
     /* Alow to enable/disable sound feedback */
-    public static bool SoundDashEnabled { get; set; } = true;
-    public static bool SoundJumpEnabled { get; set; } = true;
+    public static bool DashSoundEnabled { get; set; } = true;
+    public static bool JumpSoundEnabled { get; set; } = true;
 
     Camerashake camerashake;
     SpriteRenderer renderer;
@@ -52,13 +52,14 @@ public class FeedBackControler : MonoBehaviour
      */
     public void PlayJumpSound()
     {
-        if (SoundJumpEnabled){
+        if (JumpSoundEnabled)
+        {
             audioSource.PlayOneShot(jumpAudioClip);
         }
     }
     public void PlayDashSound()
     {
-        if(SoundDashEnabled){
+        if(DashSoundEnabled){
             audioSource.PlayOneShot(dashAudioClip);
         }
     }
