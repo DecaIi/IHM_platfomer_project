@@ -74,6 +74,7 @@ public class Playercontroler : MonoBehaviour
     bool canJumpRight = true;
     bool canDash = true;
     bool isGrabing;
+    bool startGrabing;
 
     
     void Awake()
@@ -129,6 +130,7 @@ public class Playercontroler : MonoBehaviour
     public void StartGrab()
     {
         isGrabing = true;
+        startGrabing = true;
     }
     /** Function to call when we want the player stop grabing the wall 
      */
@@ -158,16 +160,25 @@ public class Playercontroler : MonoBehaviour
             !contactHanlder.Contacts.Bottom                                    // is't close to ground 
             ) //wall grab 
         {
-            Debug.Log("Eneegie decrease :" + currentEnergie);
             DecreceEnergie();
-            currentVelocity.y = 0;
-            ComputeVelocity(new Vector2(0, wallGrabFallingAccel), new Vector2(0, wallGrabFallingAccel), new Vector2(0, 1)); //the player can slide along the wall           
+            //Debug.Log("Eneegie decrease :" + currentEnergie);
+            if (startGrabing)
+            {
+                currentVelocity.y = 0;
+                startGrabing = false;
+            }
+            else
+            {
+                currentVelocity.y += gravityAccel * Time.deltaTime; //compensate gravity
+
+            }
+            //ComputeVelocity(new Vector2(0, wallGrabFallingAccel), new Vector2(0, -wallGrabFallingAccel), new Vector2(0, -1)); //the player can slide along the wall           
         }
         else
         {
             if (contactHanlder.Contacts.Bottom)     // only recover energi if grounded 
             {
-                Debug.Log("Eneegie Recover:  " + currentEnergie);
+                //Debug.Log("Eneegie Recover:  " + currentEnergie);
                 RecoverEnergie();
             }
         }
@@ -231,7 +242,10 @@ public class Playercontroler : MonoBehaviour
      */
     void ComputeGravity()
     {
+        Debug.Log("befor gravity : " + currentVelocity);
+
         currentVelocity += Vector2.down * gravityAccel * Time.deltaTime;
+        Debug.Log("after gravity : " + currentVelocity);
     }
 
     /**
@@ -264,13 +278,15 @@ public class Playercontroler : MonoBehaviour
         else if (contactHanlder.Contacts.Left && canJumpLeft)
         {
             canJumpLeft = false;
-            currentVelocity += sideJumpAccel;
+            Debug.Log("prevelo : " + currentVelocity);
+            currentVelocity = currentVelocity.x * Vector2.right + sideJumpAccel;
+            Debug.Log("postvelo:" + currentVelocity);
             StartCoroutine(JumpCoroutineLeft());
         }
         else if(contactHanlder.Contacts.Right && canJumpRight)
         {
             canJumpRight = false;
-            currentVelocity += new Vector2(-sideJumpAccel.x, sideJumpAccel.y);
+            currentVelocity = currentVelocity.x * Vector2.right + new Vector2(-sideJumpAccel.x, sideJumpAccel.y);
             StartCoroutine(JumpCoroutineRight());
         } 
     }
