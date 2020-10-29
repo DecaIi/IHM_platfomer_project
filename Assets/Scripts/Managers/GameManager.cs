@@ -6,6 +6,14 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    private static string baseScene = "BaseScene";
+    private static string menuScene = "Menu";
+    private static string settingsScene = "Settings";
+    private static string pauseScene = "Pause";
+    private static string currentGameScene = "";
+
+    public static string[] LevelScenes { get; private set; } = { "SampleScene", "LVL2" };
+
     private static GameManager instance;
 
     public static GameManager Instance
@@ -25,26 +33,23 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        StartCoroutine(LoadScene("Menu"));
+        StartCoroutine(ChangeScene(menuScene));
     }
 
     public void LoadMenu()
     {
-        UnloadScenes();
-        StartCoroutine(LoadScene("Menu"));
+        StartCoroutine(ChangeScene(menuScene));
     }
 
-    public void LoadGame()
+    public void LoadGameScene(int gameSceneIndex)
     {
         Time.timeScale = 1;
-        UnloadScenes();
-        StartCoroutine(LoadScene("LVL2"));
+        StartCoroutine(ChangeScene(LevelScenes[gameSceneIndex], false, true));
     }
 
     public void LoadSettings()
     {
-        UnloadScenesExceptGame();
-        StartCoroutine(LoadScene("Settings"));
+        StartCoroutine(ChangeScene(settingsScene, true));
     }
 
     public void Quit()
@@ -55,22 +60,79 @@ public class GameManager : MonoBehaviour
     public void Pause()
     {
         Time.timeScale = 0;
-        UnloadScenesExceptGame();
-        StartCoroutine(LoadScene("Pause"));
+        StartCoroutine(ChangeScene(pauseScene, true));
     }
 
     public void Resume()
     {
-        UnloadScenesExceptGame();
-        SceneManager.SetActiveScene(SceneManager.GetSceneByName("LVL2"));
+        StartCoroutine(ChangeScene(currentGameScene, true, true));
         Time.timeScale = 1;
+    }
+
+    private IEnumerator ChangeScene(string sceneName, bool keepGameScene = false, bool isGameScene = false)
+    {
+        if (keepGameScene)
+        {
+            SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentGameScene));
+        }
+
+        List<AsyncOperation> operations = new List<AsyncOperation>();
+
+        for (int i = 0; i < SceneManager.sceneCount; ++i)
+        {
+            if (SceneManager.GetSceneAt(i).name == baseScene || (keepGameScene && SceneManager.GetSceneAt(i).name == currentGameScene))
+            {
+                continue;
+            }
+            else
+            { 
+                operations.Add(SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(i)));
+            }
+        }
+
+        foreach (AsyncOperation operation in operations)
+        {
+            while (!operation.isDone)
+            {
+                yield return null;
+            }
+        }
+
+        if (!SceneManager.GetSceneByName(sceneName).isLoaded)
+        {
+            AsyncOperation newSceneLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+
+            while (!newSceneLoad.isDone)
+            {
+                yield return null;
+            }
+
+            newSceneLoad.allowSceneActivation = true;
+        }
+
+        if (!keepGameScene)
+        {
+            if (isGameScene)
+            {
+                currentGameScene = sceneName;
+            }
+            else
+            {
+                currentGameScene = "";
+            }
+        }
+
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
     }
 
     private void UnloadScenes()
     {
-        for (int maxSceneIndex = SceneManager.sceneCount - 1; maxSceneIndex > 0; --maxSceneIndex)
+        for (int i = 0; i < SceneManager.sceneCount; ++i)
         {
-            SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(maxSceneIndex));
+            if (SceneManager.GetSceneAt(i).name != baseScene)
+            {
+                SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(i));
+            }
         }
     }
 
@@ -94,7 +156,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (SceneManager.GetActiveScene().name == "LVL2")
+        if (currentGameScene != "")
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
