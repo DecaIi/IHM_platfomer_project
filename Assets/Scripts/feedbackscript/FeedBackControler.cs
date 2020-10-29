@@ -83,7 +83,7 @@ public class FeedBackControler : MonoBehaviour
     {
        if (DashParticulesEnabled) { 
             ParticleSystem particleSystem = Instantiate(ParticleSystem,position,Quaternion.identity);
-            Destroy(particleSystem, particleSystem.main.duration); //destroy the particul system after his lif time 
+            Destroy(particleSystem.gameObject, 1) ; //destroy the particul system after his lif time 
         }
     }
    /**change the color of the object for the given color 
