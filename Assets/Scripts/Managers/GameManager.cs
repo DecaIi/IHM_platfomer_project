@@ -77,6 +77,14 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator ChangeScene(string sceneName, bool keepGameScene = false, bool isGameScene = false)
     {
+        StartCoroutine(LoadScene(sceneName, keepGameScene, isGameScene));
+        StartCoroutine(UnloadScenes(sceneName, keepGameScene, isGameScene));
+
+        yield return null;
+    }
+
+    private IEnumerator UnloadScenes(string nextSceneName, bool keepGameScene = false, bool isGameScene = false)
+    {
         if (keepGameScene && (currentGameScene != ""))
         {
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentGameScene));
@@ -86,12 +94,14 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < SceneManager.sceneCount; ++i)
         {
-            if (SceneManager.GetSceneAt(i).name == baseScene || (keepGameScene && SceneManager.GetSceneAt(i).name == currentGameScene))
+            if (SceneManager.GetSceneAt(i).name == baseScene ||
+                SceneManager.GetSceneAt(i).name == nextSceneName ||
+                (keepGameScene && SceneManager.GetSceneAt(i).name == currentGameScene))
             {
                 continue;
             }
             else
-            { 
+            {
                 operations.Add(SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(i)));
             }
         }
@@ -103,7 +113,10 @@ public class GameManager : MonoBehaviour
                 yield return null;
             }
         }
+    }
 
+    private IEnumerator LoadScene(string sceneName, bool keepGameScene = false, bool isGameScene = false)
+    {
         if (!SceneManager.GetSceneByName(sceneName).isLoaded)
         {
             AsyncOperation newSceneLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
@@ -128,35 +141,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
-    }
-
-    private void UnloadScenes()
-    {
-        for (int i = 0; i < SceneManager.sceneCount; ++i)
-        {
-            if (SceneManager.GetSceneAt(i).name != baseScene)
-            {
-                SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(i));
-            }
-        }
-    }
-
-    private void UnloadScenesExceptGame()
-    {
-        for (int maxSceneIndex = SceneManager.sceneCount - 1; maxSceneIndex > 0; --maxSceneIndex)
-        {
-            if (SceneManager.GetSceneAt(maxSceneIndex).name != "LVL2")
-            {
-                SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(maxSceneIndex));
-            }
-        }
-    }
-
-    private IEnumerator LoadScene(string sceneName)
-    {
-        SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
-        yield return null; // Wait for the next frame
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
     }
 
