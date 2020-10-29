@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8512474c1536a14db7df027d4cf76a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainMenu: {fileID: 102900000, guid: 84326915cacd0e6488427ed8584b50b7, type: 3}
-  settingsMenu: {fileID: 102900000, guid: 3e4b79fddc6fe7941b5aa9cb1ae18ae5, type: 3}
-  game: {fileID: 102900000, guid: 2cda990e2423bbf4892e6590ba056729, type: 3}
-  pauseMenu: {fileID: 102900000, guid: 925c2e4b1e4c5d24e940007f0cecb5d5, type: 3}
+  mainMenu: Menu
+  settingsMenu: Settings
+  game: SampleScene
+  pauseMenu: Pause

@@ -245,10 +245,7 @@ public class Playercontroler : MonoBehaviour
      */
     void ComputeGravity()
     {
-        Debug.Log("befor gravity : " + currentVelocity);
-
         currentVelocity += Vector2.down * gravityAccel * Time.deltaTime;
-        Debug.Log("after gravity : " + currentVelocity);
     }
 
     /**

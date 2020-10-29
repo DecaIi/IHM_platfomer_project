@@ -6,11 +6,6 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] SceneAsset mainMenu;
-    [SerializeField] SceneAsset settingsMenu;
-    [SerializeField] SceneAsset game;
-    [SerializeField] SceneAsset pauseMenu;
-
     private static GameManager instance;
 
     public static GameManager Instance
@@ -30,26 +25,26 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        StartCoroutine(LoadScene(mainMenu));
+        StartCoroutine(LoadScene("Menu"));
     }
 
     public void LoadMenu()
     {
         UnloadScenes();
-        StartCoroutine(LoadScene(mainMenu));
+        StartCoroutine(LoadScene("Menu"));
     }
 
     public void LoadGame()
     {
         Time.timeScale = 1;
         UnloadScenes();
-        StartCoroutine(LoadScene(game));
+        StartCoroutine(LoadScene("LVL2"));
     }
 
     public void LoadSettings()
     {
         UnloadScenesExceptGame();
-        StartCoroutine(LoadScene(settingsMenu));
+        StartCoroutine(LoadScene("Settings"));
     }
 
     public void Quit()
@@ -61,13 +56,13 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 0;
         UnloadScenesExceptGame();
-        StartCoroutine(LoadScene(pauseMenu));
+        StartCoroutine(LoadScene("Pause"));
     }
 
     public void Resume()
     {
         UnloadScenesExceptGame();
-        SceneManager.SetActiveScene(SceneManager.GetSceneByName(game.name));
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName("LVL2"));
         Time.timeScale = 1;
     }
 
@@ -83,31 +78,28 @@ public class GameManager : MonoBehaviour
     {
         for (int maxSceneIndex = SceneManager.sceneCount - 1; maxSceneIndex > 0; --maxSceneIndex)
         {
-            if (SceneManager.GetSceneAt(maxSceneIndex).name != game.name)
+            if (SceneManager.GetSceneAt(maxSceneIndex).name != "LVL2")
             {
                 SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(maxSceneIndex));
             }
         }
     }
 
-    private IEnumerator LoadScene(SceneAsset scene)
+    private IEnumerator LoadScene(string sceneName)
     {
-        SceneManager.LoadScene(scene.name, LoadSceneMode.Additive);
+        SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
         yield return null; // Wait for the next frame
-        SceneManager.SetActiveScene(SceneManager.GetSceneByName(scene.name));
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
     }
 
     private void Update()
     {
-        if (SceneManager.GetActiveScene().name == "SampleScene")
+        if (SceneManager.GetActiveScene().name == "LVL2")
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 Pause();
             }
         }
-    }
-
-    
-     
+    }  
 }
