@@ -329,6 +329,10 @@ public class Playercontroler : MonoBehaviour
         {
             Debug.Log("Dash!");
             canDash = false;
+            if ( currentVelocity.y <0 && _dir.y > 0) // we want to dash a she same higth when faling and we dont 
+            {
+                currentVelocity.y = 0; 
+            }
             currentVelocity += _dir * initialDashAccel;
             StartCoroutine(Unlimitedspeed());
             dashFeedback();
