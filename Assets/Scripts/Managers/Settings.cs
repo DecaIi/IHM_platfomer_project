@@ -14,6 +14,9 @@ public class Settings : MonoBehaviour
     [SerializeField] Toggle jumpSoundToogle;
     [SerializeField] Toggle dashSoundToogle;
 
+    [SerializeField] GameObject panel;
+    [SerializeField] Color darkenColor;
+
     public static bool InGameSettings { get; set; } = false;
 
     private void Awake()
@@ -25,6 +28,15 @@ public class Settings : MonoBehaviour
         wallGrabRecoverToogle.isOn = FeedBackControler.WallGrabRecoverEnabled;
         jumpSoundToogle.isOn = FeedBackControler.JumpSoundEnabled;
         dashSoundToogle.isOn = FeedBackControler.DashSoundEnabled;
+
+        if (InGameSettings)
+        {
+            panel.GetComponent<Image>().color = darkenColor;
+        }
+        else
+        {
+            panel.GetComponent<Image>().color = Color.clear;
+        }
     }
 
     private void Update()

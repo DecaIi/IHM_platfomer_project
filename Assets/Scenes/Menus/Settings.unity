@@ -580,7 +580,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 0}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1838,6 +1838,8 @@ MonoBehaviour:
   wallGrabRecoverToogle: {fileID: 552045583}
   jumpSoundToogle: {fileID: 512478437}
   dashSoundToogle: {fileID: 665076299}
+  panel: {fileID: 471650307}
+  darkenColor: {r: 0, g: 0, b: 0, a: 0.39215687}
 --- !u!1 &1140665517
 GameObject:
   m_ObjectHideFlags: 0
