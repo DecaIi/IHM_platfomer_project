@@ -14,7 +14,8 @@ public class ArrivalZone : MonoBehaviour
         {
             levelFinished = true;
             Debug.Log("IN");
-            GameManager.Instance.LoadGameScene(0);
+            GameManager.Instance.LoadGameScene(2);
+            
         }
     }
 }
