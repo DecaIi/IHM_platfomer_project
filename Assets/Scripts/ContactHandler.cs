@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.IO.MemoryMappedFiles;
+using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 
 /*
  * Struct to hold contact data.
