@@ -103,11 +103,6 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator UnloadScenes(string nextSceneName, bool keepGameScene = false, bool isGameScene = false)
     {
-        if (keepGameScene && (currentGameScene != ""))
-        {
-            SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentGameScene));
-        }
-
         List<AsyncOperation> operations = new List<AsyncOperation>();
 
         for (int i = 0; i < SceneManager.sceneCount; ++i)

@@ -518,7 +518,7 @@ PrefabInstance:
     - target: {fileID: 7208017265951986130, guid: 33c09d3accb11e14aa8a5d93765100fe,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.8492364
+      value: 1.2925979
       objectReference: {fileID: 0}
     - target: {fileID: 7208017265951986143, guid: 33c09d3accb11e14aa8a5d93765100fe,
         type: 3}
@@ -532,6 +532,25 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 33c09d3accb11e14aa8a5d93765100fe, type: 3}
+--- !u!1 &430509879 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7208017265951986143, guid: 33c09d3accb11e14aa8a5d93765100fe,
+    type: 3}
+  m_PrefabInstance: {fileID: 430509878}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &430509880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 430509879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75683bb7bc1fe4e4b92228980177d245, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nextLevel: SampleScene
 --- !u!1001 &577810139
 PrefabInstance:
   m_ObjectHideFlags: 0
