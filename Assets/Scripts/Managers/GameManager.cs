@@ -71,7 +71,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator ChangeScene(string sceneName, bool keepGameScene = false, bool isGameScene = false)
     {
-        if (keepGameScene)
+        if (keepGameScene && (currentGameScene != ""))
         {
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentGameScene));
         }
