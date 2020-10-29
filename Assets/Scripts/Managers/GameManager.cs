@@ -8,11 +8,12 @@ public class GameManager : MonoBehaviour
 {
     private static string baseScene = "BaseScene";
     private static string menuScene = "Menu";
+    private static string levelsScene = "LevelSelection";
     private static string settingsScene = "Settings";
     private static string pauseScene = "Pause";
     private static string currentGameScene = "";
 
-    public static string[] LevelScenes { get; private set; } = { "SampleScene", "LVL2" };
+    public static string[] LevelScenes { get; private set; } = { "ControllerTuto", "KeyboardTuto", "SampleScene", "LVL2" };
 
     private static GameManager instance;
 
@@ -39,6 +40,11 @@ public class GameManager : MonoBehaviour
     public void LoadMenu()
     {
         StartCoroutine(ChangeScene(menuScene));
+    }
+
+    public void LoadLevels()
+    {
+        StartCoroutine(ChangeScene(levelsScene));
     }
 
     public void LoadGameScene(int gameSceneIndex)
@@ -158,7 +164,7 @@ public class GameManager : MonoBehaviour
     {
         if (currentGameScene != "")
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetButtonDown("Start"))
             {
                 Pause();
             }

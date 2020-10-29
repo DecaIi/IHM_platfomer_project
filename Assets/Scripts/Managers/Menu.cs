@@ -10,6 +10,11 @@ public class Menu : MonoBehaviour
         GameManager.Instance.LoadGameScene(1);
     }
 
+    public void Levels()
+    {
+        GameManager.Instance.LoadLevels();
+    }
+
     public void LoadSettings()
     {
         Settings.InGameSettings = false;
