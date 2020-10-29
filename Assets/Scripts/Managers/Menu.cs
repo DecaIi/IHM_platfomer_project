@@ -7,7 +7,12 @@ public class Menu : MonoBehaviour
 {
     public void Play()
     {
-        GameManager.Instance.LoadGame();
+        GameManager.Instance.LoadGameScene(1);
+    }
+
+    public void Levels()
+    {
+        GameManager.Instance.LoadLevels();
     }
 
     public void LoadSettings()
