@@ -53,6 +53,12 @@ public class GameManager : MonoBehaviour
         StartCoroutine(ChangeScene(LevelScenes[gameSceneIndex], false, true));
     }
 
+    public void LoadGameScene(string gameSceneName)
+    {
+        Time.timeScale = 1;
+        StartCoroutine(ChangeScene(gameSceneName, false, true));
+    }
+
     public void LoadSettings()
     {
         StartCoroutine(ChangeScene(settingsScene, true));
@@ -77,6 +83,18 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator ChangeScene(string sceneName, bool keepGameScene = false, bool isGameScene = false)
     {
+        if (!keepGameScene)
+        {
+            if (isGameScene)
+            {
+                currentGameScene = sceneName;
+            }
+            else
+            {
+                currentGameScene = "";
+            }
+        }
+
         StartCoroutine(LoadScene(sceneName, keepGameScene, isGameScene));
         StartCoroutine(UnloadScenes(sceneName, keepGameScene, isGameScene));
 
@@ -127,18 +145,6 @@ public class GameManager : MonoBehaviour
             }
 
             newSceneLoad.allowSceneActivation = true;
-        }
-
-        if (!keepGameScene)
-        {
-            if (isGameScene)
-            {
-                currentGameScene = sceneName;
-            }
-            else
-            {
-                currentGameScene = "";
-            }
         }
 
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
