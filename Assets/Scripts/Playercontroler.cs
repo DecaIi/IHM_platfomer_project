@@ -1,14 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading;
-using TMPro;
-using Unity.Collections;
-using UnityEditor.Experimental.AssetImporters;
-using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.Timeline;
 
 public class Playercontroler : MonoBehaviour
 {
@@ -253,7 +245,7 @@ public class Playercontroler : MonoBehaviour
      */
     void HandleCollisions()
     {
-        RaycastHit2D[] raycastHits = new RaycastHit2D[4];
+        RaycastHit2D[] raycastHits = new RaycastHit2D[16];
         int num = playerCollider.Cast(currentVelocity.normalized, filter, raycastHits, currentVelocity.magnitude * Time.deltaTime);
 
         for(int i = 0; i < num; ++i)

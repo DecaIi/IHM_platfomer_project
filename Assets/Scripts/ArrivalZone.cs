@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ArrivalZone : MonoBehaviour
 {
-    [SerializeField] int nextLevel;
+    [SerializeField] string nextLevel;
 
     private bool levelFinished = false;
 
