@@ -148,9 +148,9 @@ public class Playercontroler : MonoBehaviour
     public void HandelGrab()
     {
         if (isGrabing &&        // want to grab
-            currentEnergie > energieDecresePerTime * Time.deltaTime   && // had enouth energie 
-            (contactHanlder.Contacts.Left || contactHanlder.Contacts.Right) && //is close to a wall
-            !contactHanlder.Contacts.Bottom                                    // is't close to ground 
+            currentEnergie > energieDecresePerTime * Time.deltaTime    // had enouth energie 
+            && (contactHanlder.Contacts.Left || contactHanlder.Contacts.Right)  //is close to a wall
+            //&& !contactHanlder.Contacts.Bottom                                    // is't close to ground 
             ) //wall grab 
         {
             DecreceEnergie();
