@@ -23,14 +23,13 @@ public class GameManager : MonoBehaviour
         {
             if (instance == null)
             {
-                GameObject gm = new GameObject("GameManager");
-                gm.AddComponent<GameManager>();
+                throw new System.Exception("GameManager not instanciated. Hint: Start from the BaseScene to be able to perform scene changes.");
             }
 
             return instance;
         }
     }
-
+    
     private void Awake()
     {
         instance = this;

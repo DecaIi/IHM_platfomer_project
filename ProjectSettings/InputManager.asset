@@ -142,7 +142,7 @@ InputManager:
     altNegativeButton: 
     altPositiveButton: 
     gravity: 10000
-    dead: 0.001
+    dead: 1
     sensitivity: 10000
     snap: 1
     invert: 0
@@ -157,9 +157,9 @@ InputManager:
     positiveButton: z
     altNegativeButton: 
     altPositiveButton: 
-    gravity: 3
-    dead: 0.001
-    sensitivity: 3
+    gravity: 10000
+    dead: 1
+    sensitivity: 10000
     snap: 1
     invert: 0
     type: 0
@@ -220,7 +220,7 @@ InputManager:
     negativeButton: 
     positiveButton: e
     altNegativeButton: 
-    altPositiveButton: 
+    altPositiveButton: o
     gravity: 3
     dead: 0.001
     sensitivity: 3
@@ -250,7 +250,7 @@ InputManager:
     descriptiveName: Y button equivalent for keyboard
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: x
+    positiveButton: y
     altNegativeButton: 
     altPositiveButton: 
     gravity: 3
