@@ -100,6 +100,7 @@ public class Playercontroler : MonoBehaviour
 
     public void Move(Vector2 _dir)
     {
+        if (!canMove) { return; }
 
         if (_dir.x == 0 && _dir.y == 0) //no movment imput 
         {
@@ -165,7 +166,7 @@ public class Playercontroler : MonoBehaviour
             {
                 currentVelocity.y += gravityAccel * Time.deltaTime; //compensate gravity
             }
-            //ComputeVelocity(new Vector2(0, wallGrabFallingAccel), new Vector2(0, -wallGrabFallingAccel), new Vector2(0, -1)); //the player can slide along the wall           
+            ComputeVelocity(new Vector2(0, wallGrabFallingAccel), new Vector2(0, -wallGrabFallingAccel), new Vector2(0, -1)); //the player can slide along the wall           
         }
         else
         {
@@ -266,6 +267,7 @@ public class Playercontroler : MonoBehaviour
         {
             canJumpBottom = false;
             currentVelocity += Vector2.up * initialJumpAccel;
+            //StartCoroutine(Unlimitedspeed(initialJumpAccel, 0.1f));
             StartCoroutine(JumpCoroutineBottom());
             feedBackControler.PlayJumpSound();
         }
@@ -274,6 +276,7 @@ public class Playercontroler : MonoBehaviour
             canJumpLeft = false;
             Debug.Log("prevelo : " + currentVelocity);
             currentVelocity = currentVelocity.x * Vector2.right + new Vector2(sideJumpAccel.x, sideJumpAccel.y);
+            StartCoroutine(Unlimitedspeed(sideJumpAccel.y, 0.1f));
             Debug.Log("postvelo:" + currentVelocity);
             StartCoroutine(JumpCoroutineLeft());
             feedBackControler.PlayJumpSound();
@@ -282,6 +285,7 @@ public class Playercontroler : MonoBehaviour
         {
             canJumpRight = false;
             currentVelocity = currentVelocity.x * Vector2.right + new Vector2(-sideJumpAccel.x, sideJumpAccel.y);
+            StartCoroutine(Unlimitedspeed(sideJumpAccel.y, 0.1f));
             StartCoroutine(JumpCoroutineRight());
             feedBackControler.PlayJumpSound();
         } 
@@ -331,7 +335,7 @@ public class Playercontroler : MonoBehaviour
                 currentVelocity.y = 0; 
             }
             currentVelocity += _dir * initialDashAccel;
-            StartCoroutine(Unlimitedspeed());
+            StartCoroutine(Unlimitedspeed(initialDashAccel,dashDuration));
             dashFeedback();
             StartCoroutine(DashRecoverCoroutine());
             
@@ -355,13 +359,13 @@ public class Playercontroler : MonoBehaviour
     /**
      * to call when speed is unlimited 
      */
-    IEnumerator Unlimitedspeed()
+    IEnumerator Unlimitedspeed(float speedtoAdd ,float time)
     {
-        movSpeedMax += initialDashAccel;            //prevent from clamping the sped for the dash 
-        airMovSpeedMax += initialDashAccel;
-        yield return new WaitForSeconds(dashDuration);
-        movSpeedMax -= initialDashAccel;            //prevent from clamping the sped for the dash 
-        airMovSpeedMax -= initialDashAccel;
+        movSpeedMax += speedtoAdd;            //prevent from clamping the sped for the dash 
+        airMovSpeedMax += speedtoAdd;
+        yield return new WaitForSeconds(time);
+        movSpeedMax -= speedtoAdd;            //prevent from clamping the sped for the dash 
+        airMovSpeedMax -= speedtoAdd;
     }
 
     IEnumerator DashRecoverCoroutine()
