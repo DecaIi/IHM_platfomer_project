@@ -175,7 +175,7 @@ public class Playercontroler : MonoBehaviour
             {
                 currentVelocity.y += gravityAccel * Time.deltaTime; //compensate gravity
             }
-            //ComputeVelocity(new Vector2(0, wallGrabFallingAccel), new Vector2(0, -wallGrabFallingAccel), new Vector2(0, -1)); //the player can slide along the wall           
+            ComputeVelocity(new Vector2(0, wallGrabFallingAccel), new Vector2(0, -wallGrabFallingAccel), new Vector2(0, -1)); //the player can slide along the wall           
         }
         else
         {
