@@ -306,7 +306,7 @@ MonoBehaviour:
   airMovAccelMax: 50
   airMovDeccelMax: 50
   fallingAccel: 5
-  wallGrabFallingAccel: 0
+  wallGrabFallingAccel: -2
   initialJumpAccel: 15
   sideJumpAccel: {x: 15, y: 15}
   jumpDelay: 0.2
