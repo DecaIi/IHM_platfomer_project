@@ -308,8 +308,9 @@ MonoBehaviour:
   fallingAccel: 5
   wallGrabFallingAccel: 0
   initialJumpAccel: 15
-  sideJumpAccel: {x: 15, y: 15}
+  sideJumpAccel: {x: 10, y: 15}
   jumpDelay: 0.2
+  wallJumpToleranceTime: 0.1
   maximuEnergie: 100
   energieDecresePerTime: 100
   energieRecoverPerTime: 200

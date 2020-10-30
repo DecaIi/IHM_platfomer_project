@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 
@@ -24,6 +25,7 @@ public class Playercontroler : MonoBehaviour
     [SerializeField] float initialJumpAccel;            //The force applied to the player when starting to jump
     [SerializeField] Vector2 sideJumpAccel;
     [SerializeField] float jumpDelay;
+    [SerializeField] float wallJumpToleranceTime;
 
     [Header("Energie")]
     [SerializeField] float maximuEnergie;               //the maximumenergie for wall grab
@@ -55,6 +57,7 @@ public class Playercontroler : MonoBehaviour
     float currentEnergie;
 
     Vector2 currentVelocity;
+    Vector2 direction;
 
     public Vector2 Velocity
     {
@@ -82,6 +85,7 @@ public class Playercontroler : MonoBehaviour
         };
         isGrabing = false;
         currentVelocity = new Vector2(0, 0);
+        direction = new Vector2(0, 0);
         currentEnergie = maximuEnergie;
     }
 
@@ -100,6 +104,10 @@ public class Playercontroler : MonoBehaviour
 
     public void Move(Vector2 _dir)
     {
+        if (!canMove)
+        {
+            return;
+        }
 
         if (_dir.x == 0 && _dir.y == 0) //no movment imput 
         {
@@ -273,7 +281,7 @@ public class Playercontroler : MonoBehaviour
         {
             canJumpLeft = false;
             Debug.Log("prevelo : " + currentVelocity);
-            currentVelocity = currentVelocity.x * Vector2.right + new Vector2(sideJumpAccel.x, sideJumpAccel.y);
+            
             Debug.Log("postvelo:" + currentVelocity);
             StartCoroutine(JumpCoroutineLeft());
             feedBackControler.PlayJumpSound();
@@ -281,7 +289,6 @@ public class Playercontroler : MonoBehaviour
         else if(contactHanlder.Contacts.Right && canJumpRight)
         {
             canJumpRight = false;
-            currentVelocity = currentVelocity.x * Vector2.right + new Vector2(-sideJumpAccel.x, sideJumpAccel.y);
             StartCoroutine(JumpCoroutineRight());
             feedBackControler.PlayJumpSound();
         } 
@@ -297,9 +304,17 @@ public class Playercontroler : MonoBehaviour
 
     IEnumerator JumpCoroutineLeft() //Jump timer 
     {
+        canJumpLeft = false;
+        float t = Time.time;
+        while (Time.time - t < wallJumpToleranceTime && direction == Vector2.zero)
+        {
+            yield return null;
+        }
+        currentVelocity = currentVelocity.x * Vector2.right + new Vector2((0.2f + direction.x) * sideJumpAccel.x, sideJumpAccel.y);
+
         canMove = false;
         //Counts for how long we've been jumping
-        yield return new WaitForSeconds(jumpDelay); // wait jumpDelay second 
+        yield return new WaitForSeconds(jumpDelay - wallJumpToleranceTime); // wait jumpDelay second 
         canMove = true;
         canJumpLeft = true;
         yield return null;
@@ -307,9 +322,17 @@ public class Playercontroler : MonoBehaviour
 
     IEnumerator JumpCoroutineRight() //Jump timer 
     {
+        canJumpRight = false;
+        float t = Time.time;
+        while (Time.time - t < wallJumpToleranceTime && direction == Vector2.zero)
+        {
+            yield return null;
+        }
+        currentVelocity = currentVelocity.x * Vector2.right + new Vector2((-0.2f + direction.x) * sideJumpAccel.x, sideJumpAccel.y);
+
         canMove = false;
         //Counts for how long we've been jumping
-        yield return new WaitForSeconds(jumpDelay); // wait jumpDelay second 
+        yield return new WaitForSeconds(jumpDelay - wallJumpToleranceTime); // wait jumpDelay second 
         canMove = true;
         canJumpRight = true;
         yield return null;
@@ -374,5 +397,10 @@ public class Playercontroler : MonoBehaviour
         yield return null;
     }
 
-    
+    public void UpdateDirection(Vector2 _dir)
+    {
+        direction = _dir;
+    }
+
+
 }

@@ -51,6 +51,8 @@ public class ImputControler : MonoBehaviour
         {
             playerControler.Move(output);
         }
+
+        playerControler.UpdateDirection(output);
         
     }
 
