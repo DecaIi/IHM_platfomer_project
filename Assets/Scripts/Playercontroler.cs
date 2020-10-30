@@ -62,13 +62,13 @@ public class Playercontroler : MonoBehaviour
         private set { currentVelocity = value; }
     }
 
+    bool canMove = true;
     bool canJumpBottom = true;
     bool canJumpLeft = true;
     bool canJumpRight = true;
     bool canDash = true;
     bool isGrabing;
     bool startGrabing;
-
     
     void Awake()
     {
@@ -100,6 +100,7 @@ public class Playercontroler : MonoBehaviour
 
     public void Move(Vector2 _dir)
     {
+
         if (_dir.x == 0 && _dir.y == 0) //no movment imput 
         {
             float deceleration = contactHanlder.Contacts.Bottom ? movDeccelMax : airMovDeccelMax;
@@ -272,7 +273,7 @@ public class Playercontroler : MonoBehaviour
         {
             canJumpLeft = false;
             Debug.Log("prevelo : " + currentVelocity);
-            currentVelocity = currentVelocity.x * Vector2.right + sideJumpAccel;
+            currentVelocity = currentVelocity.x * Vector2.right + new Vector2(sideJumpAccel.x, sideJumpAccel.y);
             Debug.Log("postvelo:" + currentVelocity);
             StartCoroutine(JumpCoroutineLeft());
             feedBackControler.PlayJumpSound();
@@ -296,16 +297,20 @@ public class Playercontroler : MonoBehaviour
 
     IEnumerator JumpCoroutineLeft() //Jump timer 
     {
+        canMove = false;
         //Counts for how long we've been jumping
         yield return new WaitForSeconds(jumpDelay); // wait jumpDelay second 
+        canMove = true;
         canJumpLeft = true;
         yield return null;
     }
 
     IEnumerator JumpCoroutineRight() //Jump timer 
     {
+        canMove = false;
         //Counts for how long we've been jumping
         yield return new WaitForSeconds(jumpDelay); // wait jumpDelay second 
+        canMove = true;
         canJumpRight = true;
         yield return null;
     }

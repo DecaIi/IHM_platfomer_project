@@ -339,7 +339,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   rayCastsPerSide: 3
-  contactDistance: 0.1
+  contactDistanceBottom: 0.1
+  contactDistanceTop: 0.1
+  contactDistanceSides: 0.2
 --- !u!114 &4291588520934997930
 MonoBehaviour:
   m_ObjectHideFlags: 0

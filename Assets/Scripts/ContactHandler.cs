@@ -40,7 +40,9 @@ public class ContactHandler : MonoBehaviour
 {
     [SerializeField] LayerMask platformLayer;
     [SerializeField] int rayCastsPerSide;
-    [SerializeField] float contactDistance;
+    [SerializeField] float contactDistanceBottom;
+    [SerializeField] float contactDistanceTop;
+    [SerializeField] float contactDistanceSides;
 
     new Collider2D collider;
 
@@ -67,10 +69,10 @@ public class ContactHandler : MonoBehaviour
 
     void FixedUpdate()
     {
-        bool leftContact = Cast(Vector2.left);
-        bool rightContact = Cast(Vector2.right);
-        bool bottomContact = Cast(Vector2.down);
-        bool topContact = Cast(Vector2.up);
+        bool leftContact = Cast(Vector2.left, contactDistanceSides);
+        bool rightContact = Cast(Vector2.right, contactDistanceSides);
+        bool bottomContact = Cast(Vector2.down, contactDistanceBottom);
+        bool topContact = Cast(Vector2.up, contactDistanceTop);
 
         Contacts = new Contacts(leftContact, rightContact, bottomContact, topContact);
     }
@@ -79,7 +81,7 @@ public class ContactHandler : MonoBehaviour
      * Check for collisions in the given direction. Returns true if a collision is detected.
      * Uses member parameter contactDistance as cast distance and rayCastsPerSide for the cast resolution.
      */
-    bool Cast(Vector2 direction)
+    bool Cast(Vector2 direction, float contactDistance)
     {
         bool result = false;
         int i = 0;
