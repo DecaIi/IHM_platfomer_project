@@ -359,8 +359,8 @@ MonoBehaviour:
   ParticleSystem: {fileID: 1759586023223018557, guid: d6c787b2e48331b40b7c058a7a1a1e1a,
     type: 3}
   audioSource: {fileID: 5118582668523046811}
-  jumpAudioClip: {fileID: 8300000, guid: 05b26236ffaea264ea20d9440acfd922, type: 3}
-  dashAudioClip: {fileID: 8300000, guid: b1ac00803363e214bb664f0c400aee54, type: 3}
+  jumpAudioClip: {fileID: 8300000, guid: 97174e455b606064c830972604d4bca4, type: 3}
+  dashAudioClip: {fileID: 8300000, guid: b2333e1b661b8f547a848ba09b401e98, type: 3}
 --- !u!82 &5118582668523046811
 AudioSource:
   m_ObjectHideFlags: 0

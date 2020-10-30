@@ -282,12 +282,14 @@ public class Playercontroler : MonoBehaviour
             currentVelocity = currentVelocity.x * Vector2.right + sideJumpAccel;
             Debug.Log("postvelo:" + currentVelocity);
             StartCoroutine(JumpCoroutineLeft());
+            feedBackControler.PlayJumpSound();
         }
         else if(contactHanlder.Contacts.Right && canJumpRight)
         {
             canJumpRight = false;
             currentVelocity = currentVelocity.x * Vector2.right + new Vector2(-sideJumpAccel.x, sideJumpAccel.y);
             StartCoroutine(JumpCoroutineRight());
+            feedBackControler.PlayJumpSound();
         } 
     }
 
