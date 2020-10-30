@@ -25,6 +25,8 @@ public class Playercontroler : MonoBehaviour
     [SerializeField] float initialJumpAccel;            //The force applied to the player when starting to jump
     [SerializeField] Vector2 sideJumpAccel;
     [SerializeField] float jumpDelay;
+    [SerializeField] float jumpSideDelay;
+    [SerializeField] float disableControlDelay;
     [SerializeField] float wallJumpToleranceTime;
 
     [Header("Energie")]
@@ -310,12 +312,15 @@ public class Playercontroler : MonoBehaviour
         {
             yield return null;
         }
+        t = Time.time - t;
         currentVelocity = currentVelocity.x * Vector2.right + new Vector2((0.2f + direction.x) * sideJumpAccel.x, sideJumpAccel.y);
 
         canMove = false;
         //Counts for how long we've been jumping
-        yield return new WaitForSeconds(jumpDelay - wallJumpToleranceTime); // wait jumpDelay second 
+        yield return new WaitForSeconds(disableControlDelay - t); // wait jumpDelay second 
         canMove = true;
+
+        yield return new WaitForSeconds(jumpSideDelay - disableControlDelay - t);
         canJumpLeft = true;
         yield return null;
     }
@@ -328,12 +333,15 @@ public class Playercontroler : MonoBehaviour
         {
             yield return null;
         }
+        t = Time.time - t;
         currentVelocity = currentVelocity.x * Vector2.right + new Vector2((-0.2f + direction.x) * sideJumpAccel.x, sideJumpAccel.y);
 
         canMove = false;
         //Counts for how long we've been jumping
-        yield return new WaitForSeconds(jumpDelay - wallJumpToleranceTime); // wait jumpDelay second 
+        yield return new WaitForSeconds(disableControlDelay - t); // wait jumpDelay second 
         canMove = true;
+
+        yield return new WaitForSeconds(jumpSideDelay - disableControlDelay - t);
         canJumpRight = true;
         yield return null;
     }
