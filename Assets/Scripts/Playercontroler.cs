@@ -1,14 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading;
-using TMPro;
-using Unity.Collections;
-using UnityEditor.Experimental.AssetImporters;
-using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.Timeline;
+
 
 public class Playercontroler : MonoBehaviour
 {
