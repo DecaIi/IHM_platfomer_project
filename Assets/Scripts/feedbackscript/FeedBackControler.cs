@@ -47,6 +47,13 @@ public class FeedBackControler : MonoBehaviour
             camerashake.Shake(shakeDuration,shakeIntensity);
         }
     }
+    public void CameraSharke(float shakeDuration)
+    {
+        if (CameraShakeEnabled)
+        {
+            camerashake.Shake(shakeDuration, shakeIntensity);
+        }
+    }
     /** instanciate the particule system on the given position
      *  param/ float position   position were we want the particul system to be instanciate  
      */

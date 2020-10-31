@@ -74,6 +74,7 @@ public class Playercontroler : MonoBehaviour
     bool canJumpLeft = true;
     bool canJumpRight = true;
     bool canDash = true;
+    bool canJum = true;
     bool isGrabing;
     bool startGrabing;
     
@@ -277,7 +278,9 @@ public class Playercontroler : MonoBehaviour
     }
 
     public void Jump() // jump if the player is grounder and start a timer for the jump
-    {     
+    {
+        if (!canJum)
+            return;
         if (contactHanlder.Contacts.Bottom && canJumpBottom)
         {
             canJumpBottom = false;
@@ -390,6 +393,33 @@ public class Playercontroler : MonoBehaviour
         feedBackControler.InstanciateDashPrefabOnPosition(transform.position + new Vector3(0, transform.localScale.y, 0) / 2);
         feedBackControler.ChangeToBlue();
     }
+    bool isRecovering = false;
+    public void Respawn(Vector2 position,float incapacityTime)
+    {
+        
+        this.transform.position = position;
+        this.currentVelocity = Vector2.zero;
+        StartCoroutine(Preventmoving(incapacityTime));
+        FeedBackRespawn(incapacityTime); 
+    }
+
+    void FeedBackRespawn(float duration)
+    {
+        feedBackControler.CameraSharke(1);
+        feedBackControler.Clignote(Color.red, Color.white,duration);
+    }
+    IEnumerator Preventmoving(float duration)
+    {
+        canMove = false;
+        canJum = false;
+        canDash = false;
+        yield return new WaitForSeconds(duration);
+        //feedBackControler.ChangeToRed();
+        canDash = true;
+        canJum = true;
+        canMove = true;
+    }
+
 
 
 
