@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 
@@ -25,6 +24,8 @@ public class Playercontroler : MonoBehaviour
     [SerializeField] float initialJumpAccel;            //The force applied to the player when starting to jump
     [SerializeField] Vector2 sideJumpAccel;
     [SerializeField] float jumpDelay;
+    [SerializeField] float jumpSideDelay;
+    [SerializeField] float disableControlDelay;
     [SerializeField] float wallJumpToleranceTime;
 
     [Header("Energie")]
@@ -48,13 +49,14 @@ public class Playercontroler : MonoBehaviour
     ContactFilter2D filter;
     
 
-    Collider2D playerCollider;
+    Rigidbody2D playerRigidbody;
     ContactHandler contactHanlder;
 
     FeedBackControler feedBackControler;
     
        
     float currentEnergie;
+    float speedFactor = 1.0f;
 
     Vector2 currentVelocity;
     Vector2 direction;
@@ -75,13 +77,13 @@ public class Playercontroler : MonoBehaviour
     
     void Awake()
     {
-        playerCollider = GetComponent<Collider2D>();
+        playerRigidbody = GetComponent<Rigidbody2D>();
         contactHanlder = GetComponent<ContactHandler>();
         feedBackControler = GetComponent<FeedBackControler>();
         filter = new ContactFilter2D()
         {
             layerMask = platformLayer,
-            useTriggers = true
+            useLayerMask = true
         };
         isGrabing = false;
         currentVelocity = new Vector2(0, 0);
@@ -94,6 +96,7 @@ public class Playercontroler : MonoBehaviour
         ComputeGravity();
         HandelGrab();
         HandleCollisions();
+        ApplySpeedFactor();
         ApplyVelocity();
     }
   
@@ -256,7 +259,7 @@ public class Playercontroler : MonoBehaviour
     void HandleCollisions()
     {
         RaycastHit2D[] raycastHits = new RaycastHit2D[4];
-        int num = playerCollider.Cast(currentVelocity.normalized, filter, raycastHits, currentVelocity.magnitude * Time.deltaTime);
+        int num = playerRigidbody.Cast(currentVelocity.normalized, filter, raycastHits, currentVelocity.magnitude * speedFactor * Time.deltaTime);
 
         for(int i = 0; i < num; ++i)
         {
@@ -310,12 +313,15 @@ public class Playercontroler : MonoBehaviour
         {
             yield return null;
         }
+        t = Time.time - t;
         currentVelocity = currentVelocity.x * Vector2.right + new Vector2((0.2f + direction.x) * sideJumpAccel.x, sideJumpAccel.y);
 
         canMove = false;
         //Counts for how long we've been jumping
-        yield return new WaitForSeconds(jumpDelay - wallJumpToleranceTime); // wait jumpDelay second 
+        yield return new WaitForSeconds(disableControlDelay - t); // wait jumpDelay second 
         canMove = true;
+
+        yield return new WaitForSeconds(jumpSideDelay - disableControlDelay - t);
         canJumpLeft = true;
         yield return null;
     }
@@ -328,12 +334,15 @@ public class Playercontroler : MonoBehaviour
         {
             yield return null;
         }
+        t = Time.time - t;
         currentVelocity = currentVelocity.x * Vector2.right + new Vector2((-0.2f + direction.x) * sideJumpAccel.x, sideJumpAccel.y);
 
         canMove = false;
         //Counts for how long we've been jumping
-        yield return new WaitForSeconds(jumpDelay - wallJumpToleranceTime); // wait jumpDelay second 
+        yield return new WaitForSeconds(disableControlDelay - t); // wait jumpDelay second 
         canMove = true;
+
+        yield return new WaitForSeconds(jumpSideDelay - disableControlDelay - t);
         canJumpRight = true;
         yield return null;
     }
@@ -402,5 +411,14 @@ public class Playercontroler : MonoBehaviour
         direction = _dir;
     }
 
+    public void SlowDown(float speedFactor)
+    {
+        this.speedFactor = speedFactor;
+    }
+
+    public void ApplySpeedFactor()
+    {
+        currentVelocity *= speedFactor;
+    }
 
 }

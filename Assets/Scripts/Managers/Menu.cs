@@ -7,7 +7,7 @@ public class Menu : MonoBehaviour
 {
     public void Play()
     {
-        GameManager.Instance.LoadGameScene(3);
+        GameManager.Instance.LoadGameScene(2);
     }
 
     public void Levels()
