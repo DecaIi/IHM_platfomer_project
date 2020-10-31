@@ -365,6 +365,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4291588520934997933, guid: be6e33af1e43cf44aa1eb9221ad5e9aa,
+        type: 3}
+      propertyPath: dashDuration
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4291588520934997933, guid: be6e33af1e43cf44aa1eb9221ad5e9aa,
+        type: 3}
+      propertyPath: diagonalDashSuplementaryDelay
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4291588520934997933, guid: be6e33af1e43cf44aa1eb9221ad5e9aa,
+        type: 3}
+      propertyPath: reductiondiage
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 4291588520934997935, guid: be6e33af1e43cf44aa1eb9221ad5e9aa,
         type: 3}
       propertyPath: m_SortingLayerID
@@ -373,7 +388,7 @@ PrefabInstance:
     - target: {fileID: 4291588520934997935, guid: be6e33af1e43cf44aa1eb9221ad5e9aa,
         type: 3}
       propertyPath: m_SortingLayer
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4291588520934997937, guid: be6e33af1e43cf44aa1eb9221ad5e9aa,
         type: 3}
