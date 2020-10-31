@@ -154,6 +154,7 @@ GameObject:
   - component: {fileID: 4291588520934997928}
   - component: {fileID: 4291588520934997930}
   - component: {fileID: 5118582668523046811}
+  - component: {fileID: -2963022321678145337}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -316,9 +317,9 @@ MonoBehaviour:
   maximuEnergie: 100
   energieDecresePerTime: 100
   energieRecoverPerTime: 200
-  initialDashAccel: 20
+  initialDashAccel: 10
   dashDelay: 1
-  dashDuration: 0.1
+  dashDuration: 0.01
   groundCastRadius: 0.33
   groundDistanceDetection: 0
   gravityAccel: 50
@@ -462,3 +463,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-2963022321678145337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4291588520934997937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 612f92ad63d921146abb2f781abb07a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slowDownLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  slowDownFactor: 0.5

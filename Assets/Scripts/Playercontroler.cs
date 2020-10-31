@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 
@@ -50,13 +49,14 @@ public class Playercontroler : MonoBehaviour
     ContactFilter2D filter;
     
 
-    Collider2D playerCollider;
+    Rigidbody2D playerRigidbody;
     ContactHandler contactHanlder;
 
     FeedBackControler feedBackControler;
     
        
     float currentEnergie;
+    float speedFactor = 1.0f;
 
     Vector2 currentVelocity;
     Vector2 direction;
@@ -77,13 +77,13 @@ public class Playercontroler : MonoBehaviour
     
     void Awake()
     {
-        playerCollider = GetComponent<Collider2D>();
+        playerRigidbody = GetComponent<Rigidbody2D>();
         contactHanlder = GetComponent<ContactHandler>();
         feedBackControler = GetComponent<FeedBackControler>();
         filter = new ContactFilter2D()
         {
             layerMask = platformLayer,
-            useTriggers = true
+            useLayerMask = true
         };
         isGrabing = false;
         currentVelocity = new Vector2(0, 0);
@@ -96,6 +96,7 @@ public class Playercontroler : MonoBehaviour
         ComputeGravity();
         HandelGrab();
         HandleCollisions();
+        ApplySpeedFactor();
         ApplyVelocity();
     }
   
@@ -258,7 +259,7 @@ public class Playercontroler : MonoBehaviour
     void HandleCollisions()
     {
         RaycastHit2D[] raycastHits = new RaycastHit2D[4];
-        int num = playerCollider.Cast(currentVelocity.normalized, filter, raycastHits, currentVelocity.magnitude * Time.deltaTime);
+        int num = playerRigidbody.Cast(currentVelocity.normalized, filter, raycastHits, currentVelocity.magnitude * speedFactor * Time.deltaTime);
 
         for(int i = 0; i < num; ++i)
         {
@@ -410,5 +411,14 @@ public class Playercontroler : MonoBehaviour
         direction = _dir;
     }
 
+    public void SlowDown(float speedFactor)
+    {
+        this.speedFactor = speedFactor;
+    }
+
+    public void ApplySpeedFactor()
+    {
+        currentVelocity *= speedFactor;
+    }
 
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -13,7 +12,7 @@ public class GameManager : MonoBehaviour
     private static string pauseScene = "Pause";
     private static string currentGameScene = "";
 
-    public static string[] LevelScenes { get; private set; } = { "ControllerTuto", "KeyboardTuto", "SampleScene", "LVL2" };
+    public static string[] LevelScenes { get; private set; } = { "ControllerTuto", "KeyboardTuto", "Level1", "Level2" };
 
     private static GameManager instance;
 
