@@ -306,7 +306,7 @@ MonoBehaviour:
   airMovAccelMax: 50
   airMovDeccelMax: 50
   fallingAccel: 5
-  wallGrabFallingAccel: -2
+  wallGrabFallingAccel: 10
   initialJumpAccel: 15
   sideJumpAccel: {x: 10, y: 15}
   jumpDelay: 0.2
@@ -318,7 +318,9 @@ MonoBehaviour:
   energieRecoverPerTime: 200
   initialDashAccel: 20
   dashDelay: 1
-  dashDuration: 0.01
+  dashDuration: 0.1
+  diagonalDashSuplementaryDelay: 0.2
+  reductiondiage: 0.3
   groundCastRadius: 0.33
   groundDistanceDetection: 0
   gravityAccel: 50
