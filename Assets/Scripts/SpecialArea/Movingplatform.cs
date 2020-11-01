@@ -29,7 +29,7 @@ public class Movingplatform : MonoBehaviour
         trajetlength = Vector3.Distance(startposition, endposition);
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerStay2D(Collider2D other)
     {
         playercontroler = other.gameObject.GetComponent<Playercontroler>();
         if (playercontroler != null)
