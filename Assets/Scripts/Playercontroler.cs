@@ -501,13 +501,13 @@ public class Playercontroler : MonoBehaviour
     /** Take over ... [todo passe the graba at a base speed to avoid use of tranform.position]
      * 
      */
-    public void TakeOver(float xSpeed )
+    public void TakeOver(float xSpeed, float ySpeed )
     {
 
         Debug.LogWarning("Take over");
         if (contactHanlder.Contacts.Bottom)
         {
-            this.transform.position = new Vector3(transform.position.x + xSpeed * Time.deltaTime, transform.position.y, 0);
+            this.transform.position = new Vector3(transform.position.x + xSpeed * Time.deltaTime, transform.position.y + ySpeed * Time.deltaTime, 0);
         }
     }
 

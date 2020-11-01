@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -34,7 +35,7 @@ public class Movingplatform : MonoBehaviour
         playercontroler = other.gameObject.GetComponent<Playercontroler>();
         if (playercontroler != null)
         {
-            playercontroler.TakeOver( Mathf.Sign(endposition.x-startposition.x)*speed);
+            playercontroler.TakeOver( Math.Sign(endposition.x-startposition.x)*speed , Math.Sign(endposition.y - startposition.y) * speed);
         }
     }
 
