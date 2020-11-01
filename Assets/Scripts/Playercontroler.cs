@@ -49,8 +49,7 @@ public class Playercontroler : MonoBehaviour
     [SerializeField] float dashRecoverDelay;
     [Tooltip("Duration of dash")]
     [SerializeField] float dashDuration;                 
-    [SerializeField] float diagonalDashSuplementaryDelay;
-    [SerializeField] float reductiondiage;
+    
     
     [Header("Falling parameter")]
     [Tooltip("Value of the gravity")]
@@ -111,6 +110,7 @@ public class Playercontroler : MonoBehaviour
     {
         ComputeGravity();
         Move();
+        Deceleration();
         HandelGrab();
         HandleCollisions();
         ApplySpeedFactor();
@@ -122,21 +122,28 @@ public class Playercontroler : MonoBehaviour
         transform.position += new Vector3(currentVelocity.x, currentVelocity.y, 0) * Time.deltaTime;
     }
 
+    bool verticalDeceleration = false;
+
+    /* simulate air or ground speed reduction
+     */
+    void Deceleration()
+    {
+        if (direction.x == 0 && direction.y == 0) //no movment imput 
+        {
+            float deceleration = contactHanlder.Contacts.Bottom ? movDeccelMax : airMovDeccelMax;
+            Debug.Log("Decel :" + deceleration);
+            ComputeVelocity(new Vector2(0f, 0f), new Vector2(-deceleration, 0), new Vector2(currentVelocity.x, 0));
+        }
+    }
+
+
     public void Move()
     {
         Vector2 _dir = direction;
         if (!canMove)
         {
             return;
-        }
-
-        if (_dir.x == 0 && _dir.y == 0) //no movment imput 
-        {
-            float deceleration = contactHanlder.Contacts.Bottom ? movDeccelMax : airMovDeccelMax;
-            Debug.Log("Decel :" + deceleration);
-            ComputeVelocity(new Vector2(0f, 0f), new Vector2(-deceleration, 0), new Vector2(currentVelocity.x, 0));
-           
-        }
+        }       
         else
         {
             float maxAccel = (contactHanlder.Contacts.Bottom ? movAccelMax : airMovAccelMax);
@@ -383,12 +390,11 @@ public class Playercontroler : MonoBehaviour
             {
                 currentVelocity.y = 0; 
             }
-            Vector2 diagonalreduction = _dir.y != 0 ? new Vector2(reductiondiage, 1) : new Vector2(1, 1); // angle on diagonal dash to go to far 
-
-            currentVelocity +=  _dir * initialDashAccel * diagonalreduction ;
-            suplementarytime = _dir.y != 0 && _dir.x != 0 ? suplementarytime = diagonalDashSuplementaryDelay: 0; // prevent weard angle on diagonal dash
-            
-            StartCoroutine(Dashduration(dashDuration + suplementarytime ));
+            //Vector2 diagonalreduction = _dir.y != 0 ? new Vector2(reductiondiage, 1) : new Vector2(1, 1); // angle on diagonal dash to go to far 
+           
+            currentVelocity +=  _dir * initialDashAccel ;
+            //suplementarytime = _dir.y != 0 && _dir.x != 0 ? suplementarytime = diagonalDashSuplementaryDelay: 0; // prevent weard angle on diagonal dash
+            StartCoroutine(Dashduration(dashDuration));
             dashFeedback();
             StartCoroutine(DashRecoverCoroutine());
 
@@ -396,6 +402,37 @@ public class Playercontroler : MonoBehaviour
            // StartCoroutine(JumpCoroutine());
         }
     }
+
+
+    IEnumerator SlowDownYSpped()
+    {
+        while ( currentVelocity.y > 0)
+        {
+            yield return new WaitForFixedUpdate(); // syncron 
+            ComputeVelocity(new Vector2(0f, 0f), new Vector2(0, -airMovDeccelMax), new Vector2(0, -1));
+        }
+        yield return null;
+    }
+
+
+    /**
+    * to call when speed is unlimited 
+    */
+    IEnumerator Dashduration(float duration)
+    {
+        movSpeedMax += initialDashAccel;            //prevent from clamping the sped for the dash 
+        airMovSpeedMax += initialDashAccel;
+        canMove = false;
+        yield return new WaitForSeconds(duration);
+        canMove = true;
+        StartCoroutine(SlowDownYSpped());           //dash is over slow down y speed 
+        movSpeedMax -= initialDashAccel;            //prevent from clamping the sped for the dash 
+        airMovSpeedMax -= initialDashAccel;
+    }
+
+
+
+
     /** Function to call to generat feedback for the dash 
      * 
      */
@@ -437,20 +474,7 @@ public class Playercontroler : MonoBehaviour
 
 
 
-    /**
-     * to call when speed is unlimited 
-     */
-    IEnumerator Dashduration(float duration )
-    {
-        movSpeedMax += initialDashAccel;            //prevent from clamping the sped for the dash 
-        airMovSpeedMax += initialDashAccel;
-        canMove = false;
-        yield return new WaitForSeconds(duration);
-        canMove = true;
-        movSpeedMax -= initialDashAccel;            //prevent from clamping the sped for the dash 
-        airMovSpeedMax -= initialDashAccel;
-    }
-
+   
     IEnumerator DashRecoverCoroutine()
     {
         yield return new WaitForSeconds(dashRecoverDelay); // wait for dashdelaysecond
