@@ -1222,6 +1222,16 @@ PrefabInstance:
       propertyPath: playercontroler
       value: 
       objectReference: {fileID: 361661196}
+    - target: {fileID: 8905622336957986965, guid: e00c1ac94b910f14c9dabde34ed7cc34,
+        type: 3}
+      propertyPath: reSpwanPosition.x
+      value: 1.97
+      objectReference: {fileID: 0}
+    - target: {fileID: 8905622336957986965, guid: e00c1ac94b910f14c9dabde34ed7cc34,
+        type: 3}
+      propertyPath: reSpwanPosition.y
+      value: -2.05
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e00c1ac94b910f14c9dabde34ed7cc34, type: 3}
 --- !u!114 &361661196 stripped
