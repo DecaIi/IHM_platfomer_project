@@ -460,7 +460,7 @@ public class Playercontroler : MonoBehaviour
             this.currentVelocity.x = -currentVelocity.x;
         }
     }
-    /** Take over ... [not working]
+    /** Take over ... [todo passe the graba at a base speed to avoid use of tranform.position]
      * 
      */
     public void TakeOver(float xSpeed )
@@ -469,10 +469,7 @@ public class Playercontroler : MonoBehaviour
         Debug.LogWarning("Take over");
         if (contactHanlder.Contacts.Bottom)
         {
-            Debug.LogWarning("take over + contact " + xSpeed);
-            Debug.LogWarning("prev"+currentVelocity);
-            this.currentVelocity.x += xSpeed * 10;
-            Debug.LogWarning("post" + currentVelocity);
+            this.transform.position = new Vector3(transform.position.x + xSpeed * Time.deltaTime, transform.position.y, 0);
         }
     }
 
