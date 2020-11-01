@@ -278,7 +278,7 @@ public class Playercontroler : MonoBehaviour
      */
     void HandleCollisions()
     {
-        RaycastHit2D[] raycastHits = new RaycastHit2D[4];
+        RaycastHit2D[] raycastHits = new RaycastHit2D[2];
         int num = playerRigidbody.Cast(currentVelocity.normalized, filter, raycastHits, currentVelocity.magnitude * speedFactor * Time.deltaTime);
 
         for(int i = 0; i < num; ++i)

@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     private static string overlayScene = "Overlay";
     private static string levelFinishedScene = "LevelFinished";
 
-    public static string[] LevelScenes { get; private set; } = { "ControllerTuto", "KeyboardTuto", "Level1", "Level2" };
+    public static string[] LevelScenes { get; private set; } = { "ControllerTuto", "KeyboardTuto", "Level1", "Level2", "Level3" };
 
     public float LevelTime { get; set; } = 0.0f;
     public int LevelStars { get; set; } = 0;
