@@ -319,9 +319,7 @@ MonoBehaviour:
   energyRecoverRate: 200
   initialDashAccel: 20
   dashRecoverDelay: 1
-  dashDuration: 0.1
-  diagonalDashSuplementaryDelay: 0.2
-  reductiondiage: 0.3
+  dashDuration: 0.2
   gravityAccel: 50
   maxFallingSpeed: 3
   collisionLayer:
