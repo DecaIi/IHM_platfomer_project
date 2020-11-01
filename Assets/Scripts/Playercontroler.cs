@@ -120,6 +120,7 @@ public class Playercontroler : MonoBehaviour
         if (_dir.x == 0 && _dir.y == 0) //no movment imput 
         {
             float deceleration = contactHanlder.Contacts.Bottom ? movDeccelMax : airMovDeccelMax;
+            Debug.Log("Decel :" + deceleration);
             ComputeVelocity(new Vector2(0f, 0f), new Vector2(-deceleration, 0), new Vector2(currentVelocity.x, 0));
            
         }
@@ -446,6 +447,53 @@ public class Playercontroler : MonoBehaviour
         //canJump = true;
         yield return null;
     }
+
+    /** make the player bounce but not working ;
+     */
+    public void Bouncing()
+    {
+        if(contactHanlder.Contacts.Bottom || contactHanlder.Contacts.Top)
+        {
+            this.currentVelocity.y = -currentVelocity.y;
+        }
+        if (contactHanlder.Contacts.Left || contactHanlder.Contacts.Right)
+        {
+            this.currentVelocity.x = -currentVelocity.x;
+        }
+    }
+    /** Take over ... [todo passe the graba at a base speed to avoid use of tranform.position]
+     * 
+     */
+    public void TakeOver(float xSpeed )
+    {
+
+        Debug.LogWarning("Take over");
+        if (contactHanlder.Contacts.Bottom)
+        {
+            this.transform.position = new Vector3(transform.position.x + xSpeed * Time.deltaTime, transform.position.y, 0);
+        }
+    }
+
+    private float origineDecel ;
+    private float originalUturnAccel;
+    public void ChangeDecel(float slideFactor)
+    {
+        Debug.LogWarning("sliding");
+        origineDecel = movDeccelMax;
+        originalUturnAccel = this.uTurnAccel;
+        this.movDeccelMax =  slideFactor;
+        this.uTurnAccel = -movAccelMax;
+    }
+
+    public void UnChangeDecel(float slideFactor)
+    {
+        movDeccelMax = origineDecel;
+        uTurnAccel = originalUturnAccel;
+        //this.movDeccelMax = movDeccelMax * slideFactor;
+    }
+
+
+
 
     public void UpdateDirection(Vector2 _dir)
     {
