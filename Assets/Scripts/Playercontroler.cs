@@ -459,9 +459,22 @@ public class Playercontroler : MonoBehaviour
         {
             this.currentVelocity.x = -currentVelocity.x;
         }
-        
     }
+    /** Take over ... [not working]
+     * 
+     */
+    public void TakeOver(float xSpeed )
+    {
 
+        Debug.LogWarning("Take over");
+        if (contactHanlder.Contacts.Bottom)
+        {
+            Debug.LogWarning("take over + contact " + xSpeed);
+            Debug.LogWarning("prev"+currentVelocity);
+            this.currentVelocity.x += xSpeed * 10;
+            Debug.LogWarning("post" + currentVelocity);
+        }
+    }
 
 
     public void UpdateDirection(Vector2 _dir)
