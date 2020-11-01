@@ -34,4 +34,9 @@ public class LevelSelection : MonoBehaviour
     {
         GameManager.Instance.LoadGameScene(4);
     }
+
+    public void Level4()
+    {
+        GameManager.Instance.LoadGameScene(5);
+    }
 }
