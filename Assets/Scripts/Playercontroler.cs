@@ -36,6 +36,8 @@ public class Playercontroler : MonoBehaviour
     [SerializeField] float initialDashAccel;            //The force applied to the player when starting to jump
     [SerializeField] float dashDelay;
     [SerializeField] float dashDuration;                //Duration of the dash 
+    [SerializeField] float diagonalDashSuplementaryDelay;
+    [SerializeField] float reductiondiage;
     [Header("Ground detection")]
     [SerializeField] float groundCastRadius;            //Radius of the circle when doing the circle cast to check for the ground
     [SerializeField] float groundDistanceDetection;     //Distance of the circle cast
@@ -57,7 +59,7 @@ public class Playercontroler : MonoBehaviour
        
     float currentEnergie;
     float speedFactor = 1.0f;
-
+    float suplementarytime;
     Vector2 currentVelocity;
     Vector2 direction;
 
@@ -72,6 +74,7 @@ public class Playercontroler : MonoBehaviour
     bool canJumpLeft = true;
     bool canJumpRight = true;
     bool canDash = true;
+    bool canJum = true;
     bool isGrabing;
     bool startGrabing;
     
@@ -94,6 +97,7 @@ public class Playercontroler : MonoBehaviour
     void FixedUpdate()
     {
         ComputeGravity();
+        Move();
         HandelGrab();
         HandleCollisions();
         ApplySpeedFactor();
@@ -105,8 +109,9 @@ public class Playercontroler : MonoBehaviour
         transform.position += new Vector3(currentVelocity.x, currentVelocity.y, 0) * Time.deltaTime;
     }
 
-    public void Move(Vector2 _dir)
+    public void Move()
     {
+        Vector2 _dir = direction;
         if (!canMove)
         {
             return;
@@ -115,7 +120,8 @@ public class Playercontroler : MonoBehaviour
         if (_dir.x == 0 && _dir.y == 0) //no movment imput 
         {
             float deceleration = contactHanlder.Contacts.Bottom ? movDeccelMax : airMovDeccelMax;
-            ComputeVelocity(new Vector2(0f, 0f), new Vector2(-deceleration, 0f), new Vector2(currentVelocity.x, 0));
+            ComputeVelocity(new Vector2(0f, 0f), new Vector2(-deceleration, 0), new Vector2(currentVelocity.x, 0));
+           
         }
         else
         {
@@ -160,9 +166,9 @@ public class Playercontroler : MonoBehaviour
     public void HandelGrab()
     {
         if (isGrabing &&        // want to grab
-            currentEnergie > energieDecresePerTime * Time.deltaTime   && // had enouth energie 
-            (contactHanlder.Contacts.Left || contactHanlder.Contacts.Right) && //is close to a wall
-            !contactHanlder.Contacts.Bottom                                    // is't close to ground 
+            currentEnergie > energieDecresePerTime * Time.deltaTime    // had enouth energie 
+            && (contactHanlder.Contacts.Left || contactHanlder.Contacts.Right)  //is close to a wall
+            //&& !contactHanlder.Contacts.Bottom                                    // is't close to ground 
             ) //wall grab 
         {
             DecreceEnergie();
@@ -176,7 +182,7 @@ public class Playercontroler : MonoBehaviour
             {
                 currentVelocity.y += gravityAccel * Time.deltaTime; //compensate gravity
             }
-            ComputeVelocity(new Vector2(0, wallGrabFallingAccel), new Vector2(0, -wallGrabFallingAccel), new Vector2(0, -1)); //the player can slide along the wall           
+            ComputeVelocity(new Vector2(0, wallGrabFallingAccel), new Vector2(0, wallGrabFallingAccel), new Vector2(0, direction.y)); //the player can slide along the wall           
         }
         else
         {
@@ -272,7 +278,9 @@ public class Playercontroler : MonoBehaviour
     }
 
     public void Jump() // jump if the player is grounder and start a timer for the jump
-    {     
+    {
+        if (!canJum)
+            return;
         if (contactHanlder.Contacts.Bottom && canJumpBottom)
         {
             canJumpBottom = false;
@@ -356,16 +364,20 @@ public class Playercontroler : MonoBehaviour
         }
         else
         {
-            Debug.Log("Dash!");
             canDash = false;
             if ( currentVelocity.y <0 && _dir.y > 0) // we want to dash a she same higth when faling and we dont 
             {
                 currentVelocity.y = 0; 
             }
-            currentVelocity += _dir * initialDashAccel;
-            StartCoroutine(Unlimitedspeed());
+            Vector2 diagonalreduction = _dir.y != 0 ? new Vector2(reductiondiage, 1) : new Vector2(1, 1); // angle on diagonal dash to go to far 
+
+            currentVelocity +=  _dir * initialDashAccel * diagonalreduction ;
+            suplementarytime = _dir.y != 0 && _dir.x != 0 ? suplementarytime = diagonalDashSuplementaryDelay: 0; // prevent weard angle on diagonal dash
+            
+            StartCoroutine(Dashduration(dashDuration + suplementarytime ));
             dashFeedback();
             StartCoroutine(DashRecoverCoroutine());
+
             
            // StartCoroutine(JumpCoroutine());
         }
@@ -381,17 +393,46 @@ public class Playercontroler : MonoBehaviour
         feedBackControler.InstanciateDashPrefabOnPosition(transform.position + new Vector3(0, transform.localScale.y, 0) / 2);
         feedBackControler.ChangeToBlue();
     }
+    bool isRecovering = false;
+    public void Respawn(Vector2 position,float incapacityTime)
+    {
+        
+        this.transform.position = position;
+        this.currentVelocity = Vector2.zero;
+        StartCoroutine(Preventmoving(incapacityTime));
+        FeedBackRespawn(incapacityTime); 
+    }
+
+    void FeedBackRespawn(float duration)
+    {
+        feedBackControler.CameraSharke(1);
+        feedBackControler.Clignote(Color.red, Color.white,duration);
+    }
+    IEnumerator Preventmoving(float duration)
+    {
+        canMove = false;
+        canJum = false;
+        canDash = false;
+        yield return new WaitForSeconds(duration);
+        //feedBackControler.ChangeToRed();
+        canDash = true;
+        canJum = true;
+        canMove = true;
+    }
+
 
 
 
     /**
      * to call when speed is unlimited 
      */
-    IEnumerator Unlimitedspeed()
+    IEnumerator Dashduration(float duration )
     {
         movSpeedMax += initialDashAccel;            //prevent from clamping the sped for the dash 
         airMovSpeedMax += initialDashAccel;
-        yield return new WaitForSeconds(dashDuration);
+        canMove = false;
+        yield return new WaitForSeconds(duration);
+        canMove = true;
         movSpeedMax -= initialDashAccel;            //prevent from clamping the sped for the dash 
         airMovSpeedMax -= initialDashAccel;
     }

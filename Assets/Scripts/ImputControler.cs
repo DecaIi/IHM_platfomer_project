@@ -47,10 +47,7 @@ public class ImputControler : MonoBehaviour
         {
             playerControler.StartGrab();
         }
-        else                        // no movment alowed if dash
-        {
-            playerControler.Move(output);
-        }
+       
 
         playerControler.UpdateDirection(output);
         
