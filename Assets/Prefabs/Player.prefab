@@ -309,24 +309,22 @@ MonoBehaviour:
   fallingAccel: 5
   wallGrabFallingAccel: 10
   initialJumpAccel: 15
-  sideJumpAccel: {x: 10, y: 15}
   jumpDelay: 0.2
-  jumpSideDelay: 0.5
   disableControlDelay: 0.2
+  wallJumpAccel: {x: 10, y: 15}
+  wallJumpDelay: 0.5
   wallJumpToleranceTime: 0.1
-  maximuEnergie: 100
-  energieDecresePerTime: 100
-  energieRecoverPerTime: 200
+  maxEnergy: 100
+  energyDecreaseRate: 100
+  energyRecoverRate: 200
   initialDashAccel: 20
-  dashDelay: 1
+  dashRecoverDelay: 1
   dashDuration: 0.1
   diagonalDashSuplementaryDelay: 0.2
   reductiondiage: 0.3
-  groundCastRadius: 0.33
-  groundDistanceDetection: 0
   gravityAccel: 50
   maxFallingSpeed: 3
-  platformLayer:
+  collisionLayer:
     serializedVersion: 2
     m_Bits: 256
 --- !u!114 &4291588520934997928

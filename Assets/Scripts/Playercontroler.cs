@@ -4,15 +4,13 @@ using UnityEngine;
 
 
 public class Playercontroler : MonoBehaviour
-{
-    [Header("Movement")]
-    
-    [Header("GroundParameter")]
+{   
+    [Header("Ground Movement")]
     [SerializeField] float movSpeedMax;                //The max movement speed when grounded
     [SerializeField] float movAccelMax;                //The maximum change in velocity the player can do on the ground. This determines how responsive the character will be when on the ground.
     [SerializeField] float movDeccelMax;               //the maximum change in velocity grounded when the player is free ( no imput comand ) 
     [SerializeField] float uTurnAccel;                 // accel to add when the player uturning
-    [Header("airParameter")]
+    [Header("Air Movement")]
     [SerializeField] float airMovSpeedMax;             //The max movement speed when in the air
     [SerializeField] float airMovAccelMax;             //The maximum change in velocity the player can do in the air. This determines how responsive the character will be in the air.
     [SerializeField] float airMovDeccelMax;            //the maximum change in velocity grounded when player is "free" ( no imput command)
@@ -21,32 +19,47 @@ public class Playercontroler : MonoBehaviour
     [SerializeField] float wallGrabFallingAccel;              //wallmaxaccel on a wall
    
     [Header("Jump")]
-    [SerializeField] float initialJumpAccel;            //The force applied to the player when starting to jump
-    [SerializeField] Vector2 sideJumpAccel;
+    [Tooltip("Force applied to the player when jumping")]
+    [SerializeField] float initialJumpAccel;
+    [Tooltip("Delay before it is possible to jump again")]
     [SerializeField] float jumpDelay;
-    [SerializeField] float jumpSideDelay;
+    [Tooltip("Controls are disabled during this delay")]
     [SerializeField] float disableControlDelay;
+
+    [Header("Wall Jump")]
+    [Tooltip("Force applied to the player when wall-jumping")]
+    [SerializeField] Vector2 wallJumpAccel;
+    [Tooltip("Delay before it is possible to wall-jump again")]
+    [SerializeField] float wallJumpDelay;
+    [Tooltip("Tolerance for the player to give a direction when wall-jumping")]
     [SerializeField] float wallJumpToleranceTime;
 
-    [Header("Energie")]
-    [SerializeField] float maximuEnergie;               //the maximumenergie for wall grab
-    [SerializeField] float energieDecresePerTime;       //the energiedecrease when a wall is grab
-    [SerializeField] float energieRecoverPerTime;       
+    [Header("Wall Climb")]
+    [Tooltip("Energy available when climbing walls")]
+    [SerializeField] float maxEnergy;
+    [Tooltip("Energy decrease rate when climbing walls")]
+    [SerializeField] float energyDecreaseRate;
+    [Tooltip("Energy recover rate after climbing walls")]
+    [SerializeField] float energyRecoverRate; 
+    
     [Header("Dash")]
-    [SerializeField] float initialDashAccel;            //The force applied to the player when starting to jump
-    [SerializeField] float dashDelay;
-    [SerializeField] float dashDuration;                //Duration of the dash 
+    [Tooltip("Force applied to the player when dashing")]
+    [SerializeField] float initialDashAccel;
+    [Tooltip("Time to recover from dash")]
+    [SerializeField] float dashRecoverDelay;
+    [Tooltip("Duration of dash")]
+    [SerializeField] float dashDuration;                 
     [SerializeField] float diagonalDashSuplementaryDelay;
     [SerializeField] float reductiondiage;
-    [Header("Ground detection")]
-    [SerializeField] float groundCastRadius;            //Radius of the circle when doing the circle cast to check for the ground
-    [SerializeField] float groundDistanceDetection;     //Distance of the circle cast
     
-    [Header("Faling parameter")]    
+    [Header("Falling parameter")]
+    [Tooltip("Value of the gravity")]
     [SerializeField] float gravityAccel;                //change in velovity (y) due to gravity 
     [SerializeField] float maxFallingSpeed;             // maximum speed the object can acces in y 
 
-    [SerializeField] LayerMask platformLayer;
+    [Header("Collision Handling")]
+    [Tooltip("Handles collisions only woth objects belonging to this layer mask")]
+    [SerializeField] LayerMask collisionLayer;
 
     ContactFilter2D filter;
     
@@ -85,13 +98,13 @@ public class Playercontroler : MonoBehaviour
         feedBackControler = GetComponent<FeedBackControler>();
         filter = new ContactFilter2D()
         {
-            layerMask = platformLayer,
+            layerMask = collisionLayer,
             useLayerMask = true
         };
         isGrabing = false;
         currentVelocity = new Vector2(0, 0);
         direction = new Vector2(0, 0);
-        currentEnergie = maximuEnergie;
+        currentEnergie = maxEnergy;
     }
 
     void FixedUpdate()
@@ -153,12 +166,12 @@ public class Playercontroler : MonoBehaviour
 
     public void RecoverEnergie()
     {
-        float energieIncreced = currentEnergie + energieRecoverPerTime * Time.deltaTime;
-        currentEnergie = energieIncreced < maximuEnergie ? energieIncreced : maximuEnergie;
+        float energieIncreced = currentEnergie + energyRecoverRate * Time.deltaTime;
+        currentEnergie = energieIncreced < maxEnergy ? energieIncreced : maxEnergy;
     }
     public void DecreceEnergie()
     {
-        float energieDecreced = currentEnergie - energieDecresePerTime * Time.deltaTime;
+        float energieDecreced = currentEnergie - energyDecreaseRate * Time.deltaTime;
         currentEnergie = energieDecreced > 0 ? energieDecreced : 0;
     }
 
@@ -167,7 +180,7 @@ public class Playercontroler : MonoBehaviour
     public void HandelGrab()
     {
         if (isGrabing &&        // want to grab
-            currentEnergie > energieDecresePerTime * Time.deltaTime    // had enouth energie 
+            currentEnergie > energyDecreaseRate * Time.deltaTime    // had enouth energie 
             && (contactHanlder.Contacts.Left || contactHanlder.Contacts.Right)  //is close to a wall
             //&& !contactHanlder.Contacts.Bottom                                    // is't close to ground 
             ) //wall grab 
@@ -197,7 +210,7 @@ public class Playercontroler : MonoBehaviour
                 startGrabing = true;
             }
         }
-        if(currentEnergie < maximuEnergie / 3)
+        if(currentEnergie < maxEnergy / 3)
         {
             lowEnergiFeedback();
         }
@@ -323,14 +336,14 @@ public class Playercontroler : MonoBehaviour
             yield return null;
         }
         t = Time.time - t;
-        currentVelocity = currentVelocity.x * Vector2.right + new Vector2((0.2f + direction.x) * sideJumpAccel.x, sideJumpAccel.y);
+        currentVelocity = currentVelocity.x * Vector2.right + new Vector2((0.2f + direction.x) * wallJumpAccel.x, wallJumpAccel.y);
 
         canMove = false;
         //Counts for how long we've been jumping
         yield return new WaitForSeconds(disableControlDelay - t); // wait jumpDelay second 
         canMove = true;
 
-        yield return new WaitForSeconds(jumpSideDelay - disableControlDelay - t);
+        yield return new WaitForSeconds(wallJumpDelay - disableControlDelay - t);
         canJumpLeft = true;
         yield return null;
     }
@@ -344,14 +357,14 @@ public class Playercontroler : MonoBehaviour
             yield return null;
         }
         t = Time.time - t;
-        currentVelocity = currentVelocity.x * Vector2.right + new Vector2((-0.2f + direction.x) * sideJumpAccel.x, sideJumpAccel.y);
+        currentVelocity = currentVelocity.x * Vector2.right + new Vector2((-0.2f + direction.x) * wallJumpAccel.x, wallJumpAccel.y);
 
         canMove = false;
         //Counts for how long we've been jumping
         yield return new WaitForSeconds(disableControlDelay - t); // wait jumpDelay second 
         canMove = true;
 
-        yield return new WaitForSeconds(jumpSideDelay - disableControlDelay - t);
+        yield return new WaitForSeconds(wallJumpDelay - disableControlDelay - t);
         canJumpRight = true;
         yield return null;
     }
@@ -440,7 +453,7 @@ public class Playercontroler : MonoBehaviour
 
     IEnumerator DashRecoverCoroutine()
     {
-        yield return new WaitForSeconds(dashDelay); // wait for dashdelaysecond
+        yield return new WaitForSeconds(dashRecoverDelay); // wait for dashdelaysecond
         yield return new WaitWhile(() => !contactHanlder.Contacts.Bottom); // wait until contact bottom = true 
         canDash = true;
         feedBackControler.ChangeToRed();
