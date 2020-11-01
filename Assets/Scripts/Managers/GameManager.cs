@@ -11,8 +11,14 @@ public class GameManager : MonoBehaviour
     private static string settingsScene = "Settings";
     private static string pauseScene = "Pause";
     private static string currentGameScene = "";
+    private static string overlayScene = "Overlay";
+    private static string levelFinishedScene = "LevelFinished";
 
-    public static string[] LevelScenes { get; private set; } = { "ControllerTuto", "KeyboardTuto", "Level1", "Level2" };
+    public static string[] LevelScenes { get; private set; } = { "ControllerTuto", "KeyboardTuto", "Level1", "Level2", "Level3" };
+
+    public float LevelTime { get; set; } = 0.0f;
+    public int LevelStars { get; set; } = 0;
+    public string NextLevel { get; set; } = "Menu";
 
     private static GameManager instance;
 
@@ -47,14 +53,23 @@ public class GameManager : MonoBehaviour
 
     public void LoadGameScene(int gameSceneIndex)
     {
+        LevelTime = 0;
+        LevelStars = 0;
         Time.timeScale = 1;
         StartCoroutine(ChangeScene(LevelScenes[gameSceneIndex], false, true));
     }
 
     public void LoadGameScene(string gameSceneName)
     {
+        LevelTime = 0;
+        LevelStars = 0;
         Time.timeScale = 1;
         StartCoroutine(ChangeScene(gameSceneName, false, true));
+    }
+
+    public void LoadLevelFinished()
+    {
+        StartCoroutine(ChangeScene(levelFinishedScene));
     }
 
     public void LoadSettings()
@@ -93,8 +108,13 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        StartCoroutine(LoadScene(sceneName, keepGameScene, isGameScene));
+        StartCoroutine(LoadScene(sceneName));
         StartCoroutine(UnloadScenes(sceneName, keepGameScene, isGameScene));
+
+        if (isGameScene)
+        {
+            StartCoroutine(LoadScene(overlayScene, false));
+        }
 
         yield return null;
     }
@@ -126,7 +146,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private IEnumerator LoadScene(string sceneName, bool keepGameScene = false, bool isGameScene = false)
+    private IEnumerator LoadScene(string sceneName, bool setNewSceneActive = true)
     {
         if (!SceneManager.GetSceneByName(sceneName).isLoaded)
         {
@@ -140,7 +160,10 @@ public class GameManager : MonoBehaviour
             newSceneLoad.allowSceneActivation = true;
         }
 
-        SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
+        if (setNewSceneActive)
+        {
+            SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
+        }
     }
 
     private void Update()
