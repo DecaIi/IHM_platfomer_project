@@ -9,22 +9,26 @@ public class Door : MonoBehaviour
     [SerializeField] bool invertedBehaviour;
  
     SpriteRenderer spriteRenderer;
+    Collider2D doorCollider;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        SetDoor(false);
+        doorCollider = GetComponent<Collider2D>();
+        SetDoorOpen(false);
     }
 
-    public void SetDoor(bool open)
+    public void SetDoorOpen(bool open)
     {
         if ((open && !invertedBehaviour) || (!open && invertedBehaviour))
         {
             spriteRenderer.sprite = openDoor;
+            doorCollider.enabled = false;
         }
         else
         {
             spriteRenderer.sprite = closedDoor;
+            doorCollider.enabled = true;
         }
     }
 }
