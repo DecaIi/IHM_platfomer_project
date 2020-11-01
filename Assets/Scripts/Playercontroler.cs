@@ -447,6 +447,23 @@ public class Playercontroler : MonoBehaviour
         yield return null;
     }
 
+    /** make the player bounce but not working ;
+     */
+    public void Bouncing()
+    {
+        if(contactHanlder.Contacts.Bottom || contactHanlder.Contacts.Top)
+        {
+            this.currentVelocity.y = -currentVelocity.y;
+        }
+        if (contactHanlder.Contacts.Left || contactHanlder.Contacts.Right)
+        {
+            this.currentVelocity.x = -currentVelocity.x;
+        }
+        
+    }
+
+
+
     public void UpdateDirection(Vector2 _dir)
     {
         direction = _dir;
