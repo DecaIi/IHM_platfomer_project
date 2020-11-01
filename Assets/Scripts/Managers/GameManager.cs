@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
 
     public float LevelTime { get; set; } = 0.0f;
     public int LevelStars { get; set; } = 0;
+    public string NextLevel { get; set; } = "Menu";
 
     private static GameManager instance;
 
@@ -52,20 +53,23 @@ public class GameManager : MonoBehaviour
 
     public void LoadGameScene(int gameSceneIndex)
     {
+        LevelTime = 0;
+        LevelStars = 0;
         Time.timeScale = 1;
         StartCoroutine(ChangeScene(LevelScenes[gameSceneIndex], false, true));
     }
 
     public void LoadGameScene(string gameSceneName)
     {
+        LevelTime = 0;
+        LevelStars = 0;
         Time.timeScale = 1;
         StartCoroutine(ChangeScene(gameSceneName, false, true));
     }
 
     public void LoadLevelFinished()
     {
-        Time.timeScale = 0;
-        StartCoroutine(ChangeScene(levelFinishedScene, true));
+        StartCoroutine(ChangeScene(levelFinishedScene));
     }
 
     public void LoadSettings()

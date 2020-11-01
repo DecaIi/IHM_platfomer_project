@@ -15,4 +15,16 @@ public class LevelFinishedManager : MonoBehaviour
         time.text = GameManager.Instance.LevelTime.ToString("0.0", new CultureInfo("en-US"));
         stars.text = GameManager.Instance.LevelStars.ToString();
     }
+
+    public void Continue()
+    {
+        if (GameManager.Instance.NextLevel == "Menu")
+        {
+            GameManager.Instance.LoadMenu();
+        }
+        else
+        {
+            GameManager.Instance.LoadGameScene(GameManager.Instance.NextLevel);
+        }
+    }
 }
