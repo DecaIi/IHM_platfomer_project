@@ -379,10 +379,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 612f92ad63d921146abb2f781abb07a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slowDownLayer:
+  terrainLayer:
     serializedVersion: 2
     m_Bits: 512
-  slowDownFactor: 0.2
+  speedModificationFactor: 0.2
 --- !u!82 &5118582668523046811
 AudioSource:
   m_ObjectHideFlags: 0
