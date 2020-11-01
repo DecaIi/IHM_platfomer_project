@@ -7,6 +7,8 @@ public class Door : MonoBehaviour
     [SerializeField] Sprite openDoor;
     [SerializeField] Sprite closedDoor;
     [SerializeField] bool invertedBehaviour;
+
+    public bool IsOpen { get; private set; }
  
     SpriteRenderer spriteRenderer;
     Collider2D doorCollider;
@@ -22,11 +24,13 @@ public class Door : MonoBehaviour
     {
         if ((open && !invertedBehaviour) || (!open && invertedBehaviour))
         {
+            IsOpen = true;
             spriteRenderer.sprite = openDoor;
             doorCollider.enabled = false;
         }
         else
         {
+            IsOpen = false;
             spriteRenderer.sprite = closedDoor;
             doorCollider.enabled = true;
         }
