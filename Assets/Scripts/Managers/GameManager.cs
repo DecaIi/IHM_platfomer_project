@@ -127,7 +127,8 @@ public class GameManager : MonoBehaviour
         {
             if (SceneManager.GetSceneAt(i).name == baseScene ||
                 SceneManager.GetSceneAt(i).name == nextSceneName ||
-                (keepGameScene && SceneManager.GetSceneAt(i).name == currentGameScene))
+                (keepGameScene && SceneManager.GetSceneAt(i).name == currentGameScene) ||
+                (keepGameScene && SceneManager.GetSceneAt(i).name == overlayScene))
             {
                 continue;
             }
