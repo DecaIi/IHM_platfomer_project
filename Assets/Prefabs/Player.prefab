@@ -300,13 +300,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movSpeedMax: 4
-  movAccelMax: 400
-  movDeccelMax: 400
-  uTurnAccel: 5
+  movAccelMax: 20
+  movDeccelMax: 50
+  uTurnAccel: 400
   airMovSpeedMax: 4
-  airMovAccelMax: 50
-  airMovDeccelMax: 50
-  fallingAccel: 5
+  airMovAccelMax: 15
+  airMovDeccelMax: 45
+  fallingAccel: 100
   wallGrabFallingAccel: 10
   initialJumpAccel: 15
   jumpDelay: 0.2
