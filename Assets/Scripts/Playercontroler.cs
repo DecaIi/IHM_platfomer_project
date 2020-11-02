@@ -395,12 +395,24 @@ public class Playercontroler : MonoBehaviour
             currentVelocity +=  _dir * initialDashAccel ;
             //suplementarytime = _dir.y != 0 && _dir.x != 0 ? suplementarytime = diagonalDashSuplementaryDelay: 0; // prevent weard angle on diagonal dash
             StartCoroutine(Dashduration(dashDuration));
+            if(_dir.y > 0 && _dir.x == 0)
+            {
+                StartCoroutine(AirmovmentSpeedAfterDash());
+            }
             dashFeedback();
-            StartCoroutine(DashRecoverCoroutine());
-
-            
-           // StartCoroutine(JumpCoroutine());
+            StartCoroutine(DashRecoverCoroutine());   
         }
+    }
+
+
+    IEnumerator AirmovmentSpeedAfterDash()
+    {
+        float factor = 10;
+        canMove = true;
+        airMovAccelMax *= factor;
+        yield return new WaitUntil(() => currentVelocity.y <= 0 );
+        airMovAccelMax /= factor;
+
     }
 
 
@@ -413,6 +425,7 @@ public class Playercontroler : MonoBehaviour
         }
         yield return null;
     }
+
 
 
     /**
