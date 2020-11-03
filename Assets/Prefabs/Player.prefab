@@ -317,7 +317,7 @@ MonoBehaviour:
   maxEnergy: 100
   energyDecreaseRate: 100
   energyRecoverRate: 200
-  initialDashAccel: 20
+  initialDashAccel: {x: 10, y: 20}
   dashRecoverDelay: 1
   dashDuration: 0.2
   gravityAccel: 50
