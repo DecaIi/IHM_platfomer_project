@@ -44,7 +44,7 @@ public class Playercontroler : MonoBehaviour
     
     [Header("Dash")]
     [Tooltip("Force applied to the player when dashing")]
-    [SerializeField] float initialDashAccel;
+    [SerializeField] Vector2 initialDashAccel;
     [Tooltip("Time to recover from dash")]
     [SerializeField] float dashRecoverDelay;
     [Tooltip("Duration of dash")]
@@ -433,14 +433,14 @@ public class Playercontroler : MonoBehaviour
     */
     IEnumerator Dashduration(float duration)
     {
-        movSpeedMax += initialDashAccel;            //prevent from clamping the sped for the dash 
-        airMovSpeedMax += initialDashAccel;
+        movSpeedMax += initialDashAccel.x;            //prevent from clamping the sped for the dash 
+        airMovSpeedMax += initialDashAccel.x;
         canMove = false;
         yield return new WaitForSeconds(duration);
         canMove = true;
         StartCoroutine(SlowDownYSpped());           //dash is over slow down y speed 
-        movSpeedMax -= initialDashAccel;            //prevent from clamping the sped for the dash 
-        airMovSpeedMax -= initialDashAccel;
+        movSpeedMax -= initialDashAccel.x;            //prevent from clamping the sped for the dash 
+        airMovSpeedMax -= initialDashAccel.x;
     }
 
 
