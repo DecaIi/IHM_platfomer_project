@@ -311,7 +311,7 @@ MonoBehaviour:
   initialJumpAccel: 15
   jumpDelay: 0.2
   disableControlDelay: 0.2
-  wallJumpAccel: {x: 10, y: 15}
+  wallJumpAccel: {x: 12.5, y: 15}
   wallJumpDelay: 0.5
   wallJumpToleranceTime: 0.1
   maxEnergy: 100

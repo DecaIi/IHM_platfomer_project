@@ -312,15 +312,16 @@ public class Playercontroler : MonoBehaviour
         else if (contactHanlder.Contacts.Left && canJumpLeft)
         {
             canJumpLeft = false;
-            Debug.Log("prevelo : " + currentVelocity);
-            
-            Debug.Log("postvelo:" + currentVelocity);
+            canJumpRight = true;
+            currentVelocity += new Vector2(wallJumpAccel.x, wallJumpAccel.y);
             StartCoroutine(JumpCoroutineLeft());
             feedBackControler.PlayJumpSound();
         }
         else if(contactHanlder.Contacts.Right && canJumpRight)
         {
             canJumpRight = false;
+            canJumpLeft = true;
+            currentVelocity += new Vector2(-wallJumpAccel.x, wallJumpAccel.y);
             StartCoroutine(JumpCoroutineRight());
             feedBackControler.PlayJumpSound();
         } 
@@ -336,42 +337,22 @@ public class Playercontroler : MonoBehaviour
 
     IEnumerator JumpCoroutineLeft() //Jump timer 
     {
-        canJumpLeft = false;
-        float t = Time.time;
-        while (Time.time - t < wallJumpToleranceTime && direction == Vector2.zero)
-        {
-            yield return null;
-        }
-        t = Time.time - t;
-        currentVelocity = currentVelocity.x * Vector2.right + new Vector2((0.2f + direction.x) * wallJumpAccel.x, wallJumpAccel.y);
 
-        canMove = false;
         //Counts for how long we've been jumping
-        yield return new WaitForSeconds(disableControlDelay - t); // wait jumpDelay second 
-        canMove = true;
+        yield return new WaitForSeconds(disableControlDelay); // wait jumpDelay second 
 
-        yield return new WaitForSeconds(wallJumpDelay - disableControlDelay - t);
+        yield return new WaitForSeconds(wallJumpDelay - disableControlDelay);
         canJumpLeft = true;
         yield return null;
     }
 
     IEnumerator JumpCoroutineRight() //Jump timer 
     {
-        canJumpRight = false;
-        float t = Time.time;
-        while (Time.time - t < wallJumpToleranceTime && direction == Vector2.zero)
-        {
-            yield return null;
-        }
-        t = Time.time - t;
-        currentVelocity = currentVelocity.x * Vector2.right + new Vector2((-0.2f + direction.x) * wallJumpAccel.x, wallJumpAccel.y);
 
-        canMove = false;
         //Counts for how long we've been jumping
-        yield return new WaitForSeconds(disableControlDelay - t); // wait jumpDelay second 
-        canMove = true;
+        yield return new WaitForSeconds(disableControlDelay); // wait jumpDelay second 
 
-        yield return new WaitForSeconds(wallJumpDelay - disableControlDelay - t);
+        yield return new WaitForSeconds(wallJumpDelay - disableControlDelay);
         canJumpRight = true;
         yield return null;
     }
